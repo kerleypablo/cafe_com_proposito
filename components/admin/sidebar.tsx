@@ -11,6 +11,7 @@ import {
   Lightbulb, 
   Images,
   Handshake,
+  Gift,
   LogOut,
   Menu,
   X
@@ -23,6 +24,7 @@ const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/eventos', label: 'Eventos', icon: Calendar },
   { href: '/admin/memorias', label: 'Memorias', icon: Images },
+  { href: '/admin/sorteio', label: 'Sorteio', icon: Gift },
   { href: '/admin/participantes', label: 'Participantes', icon: Users },
   { href: '/admin/sugestoes', label: 'Sugestoes', icon: Lightbulb },
   { href: '/admin/patrocinadores', label: 'Patrocinadores', icon: Handshake },
