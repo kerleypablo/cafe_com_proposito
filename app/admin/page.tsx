@@ -4,6 +4,7 @@ import { Calendar, Users, UserCheck, Lightbulb, Cake, MessageCircle } from 'luci
 import Link from 'next/link'
 import { EVENT_SELECT, normalizeEvent } from '@/lib/events'
 import { buildWhatsappLink } from '@/lib/whatsapp'
+import { EventsLineChart } from '@/components/admin/events-line-chart'
 
 export const metadata = {
   title: 'Dashboard | Admin Cafe com Proposito',
@@ -43,9 +44,8 @@ export default async function AdminDashboardPage() {
   const { data: nextEvents } = await supabase
     .from('events')
     .select(EVENT_SELECT)
-    .gte('date', today)
     .order('date', { ascending: true })
-    .limit(3)
+    .limit(8)
 
   const { data: participantsWithBirthday } = await supabase
     .from('participants')
@@ -53,6 +53,12 @@ export default async function AdminDashboardPage() {
     .not('birthday', 'is', null)
 
   const normalizedNextEvents = nextEvents?.map(normalizeEvent) || []
+  const chartData = normalizedNextEvents.map((event) => ({
+    id: event.id,
+    title: event.title,
+    shortTitle: event.title.length > 18 ? `${event.title.slice(0, 18)}...` : event.title,
+    registrations: event.registration_count || 0,
+  }))
   const currentMonth = new Date().getMonth()
   const birthdayPeople = (participantsWithBirthday || [])
     .filter((participant) => {
@@ -182,6 +188,24 @@ export default async function AdminDashboardPage() {
           )
         })}
       </div>
+
+      <Card className="overflow-hidden border-primary/20 bg-[linear-gradient(135deg,#fffaf5_0%,#f8efe6_55%,#fffdf9_100%)]">
+        <CardHeader>
+          <CardTitle className="font-serif text-primary">Participantes por evento</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Evolucao de inscritas confirmadas em cada encontro cadastrado.
+          </p>
+        </CardHeader>
+        <CardContent>
+          {chartData.length > 0 ? (
+            <EventsLineChart data={chartData} />
+          ) : (
+            <p className="py-8 text-center text-muted-foreground">
+              Ainda nao ha eventos suficientes para montar o grafico.
+            </p>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         {/* Upcoming Events */}
