@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Trash2 } from 'lucide-react'
+import { ImagePlus, Trash2 } from 'lucide-react'
 import { revalidatePaths } from '@/lib/revalidate-client'
 
 interface EventFormProps {
@@ -30,6 +30,37 @@ export function EventForm({ event }: EventFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(event?.image_url || null)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const bucketName = 'event-images'
+
+  function getStoragePathFromUrl(url: string) {
+    const marker = `/storage/v1/object/public/${bucketName}/`
+    const index = url.indexOf(marker)
+    if (index === -1) return null
+    return url.slice(index + marker.length)
+  }
+
+  async function uploadImage(file: File) {
+    const supabase = createClient()
+    const extension = file.name.split('.').pop() || 'jpg'
+    const path = `eventos/${crypto.randomUUID()}.${extension}`
+
+    const { error: uploadError } = await supabase.storage
+      .from(bucketName)
+      .upload(path, file, {
+        cacheControl: '3600',
+        upsert: false,
+      })
+
+    if (uploadError) {
+      throw uploadError
+    }
+
+    const { data } = supabase.storage.from(bucketName).getPublicUrl(path)
+    return data.publicUrl
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -38,6 +69,18 @@ export function EventForm({ event }: EventFormProps) {
 
     const formData = new FormData(e.currentTarget)
     const isPublished = (formData.get('status') as string) === 'published'
+    let imageUrl = event?.image_url || null
+
+    if (selectedFile) {
+      try {
+        imageUrl = await uploadImage(selectedFile)
+      } catch {
+        setError('Nao foi possivel enviar a imagem do evento.')
+        setIsSubmitting(false)
+        return
+      }
+    }
+
     const data = {
       title: formData.get('title') as string,
       description: formData.get('description') as string || null,
@@ -47,7 +90,7 @@ export function EventForm({ event }: EventFormProps) {
       max_participants: formData.get('max_participants') 
         ? parseInt(formData.get('max_participants') as string) 
         : null,
-      image_url: formData.get('image_url') as string || null,
+      image_url: imageUrl,
       status: isPublished ? 'published' : 'draft',
       is_published: isPublished,
     }
@@ -95,6 +138,11 @@ export function EventForm({ event }: EventFormProps) {
 
     setIsDeleting(true)
     const supabase = createClient()
+
+    const storagePath = event.image_url ? getStoragePathFromUrl(event.image_url) : null
+    if (storagePath) {
+      await supabase.storage.from(bucketName).remove([storagePath])
+    }
 
     const { error: deleteError } = await supabase
       .from('events')
@@ -210,19 +258,43 @@ export function EventForm({ event }: EventFormProps) {
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="image_url">URL da Imagem</Label>
+      <div className="space-y-3">
+        <Label htmlFor="image_file">Imagem do evento</Label>
+        <label
+          htmlFor="image_file"
+          className="flex cursor-pointer items-center justify-between rounded-2xl border border-dashed border-border bg-secondary/20 px-4 py-4 transition-colors hover:bg-secondary/35"
+        >
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <ImagePlus className="size-4" />
+              {selectedFile ? selectedFile.name : event?.image_url ? 'Trocar imagem atual' : 'Selecionar imagem'}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              PNG, JPG ou WEBP. A imagem sera enviada direto para o Supabase Storage.
+            </p>
+          </div>
+          <span className="rounded-full bg-card px-3 py-1 text-xs text-muted-foreground shadow-sm">
+            Procurar
+          </span>
+        </label>
         <Input
-          id="image_url"
-          name="image_url"
-          type="url"
-          defaultValue={event?.image_url || ''}
-          placeholder="https://exemplo.com/imagem.jpg"
-          className="rounded-xl"
+          id="image_file"
+          ref={inputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/jpg,image/webp"
+          className="hidden"
+          onChange={(inputEvent) => {
+            const file = inputEvent.target.files?.[0] || null
+            setSelectedFile(file)
+            setPreviewUrl(file ? URL.createObjectURL(file) : event?.image_url || null)
+            if (inputRef.current) inputRef.current.value = ''
+          }}
         />
-        <p className="text-xs text-muted-foreground">
-          Cole o link de uma imagem para ilustrar o evento
-        </p>
+        {previewUrl && (
+          <div className="overflow-hidden rounded-2xl border border-border bg-card p-4">
+            <img src={previewUrl} alt={event?.title || 'Preview do evento'} className="h-40 w-full object-cover" />
+          </div>
+        )}
       </div>
 
       {error && (

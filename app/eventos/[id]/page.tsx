@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { RegistrationForm } from '@/components/registration-form'
-import { Calendar, MapPin, Users, Clock, ArrowLeft } from 'lucide-react'
+import { Calendar, MapPin, Clock, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { getPublicEventById, getPublicEventMetaById } from '@/lib/public-data'
@@ -113,18 +113,6 @@ export default async function EventPage({ params }: EventPageProps) {
             {/* Registration Card */}
             <div className="lg:col-span-1">
               <div className="sticky top-24 bg-card rounded-2xl p-6 shadow-md border border-border">
-                {/* Spots Info */}
-                {event.max_participants && (
-                  <div className="flex items-center gap-2 text-sm mb-4 pb-4 border-b border-border">
-                    <Users className="size-4 text-primary" />
-                    <span className="text-muted-foreground">
-                      {isFull 
-                        ? 'Vagas esgotadas' 
-                        : `${spotsLeft} de ${event.max_participants} vagas disponiveis`}
-                    </span>
-                  </div>
-                )}
-
                 {isPastEvent ? (
                   <div className="text-center py-4">
                     <p className="text-muted-foreground">
