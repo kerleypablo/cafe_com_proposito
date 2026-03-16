@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Plus, Calendar, MapPin, Users, Edit, Eye } from 'lucide-react'
 import Link from 'next/link'
 import { EVENT_SELECT, normalizeEvent } from '@/lib/events'
+import { CopyEventLinkButton } from '@/components/admin/copy-event-link-button'
 
 export const metadata = {
   title: 'Eventos | Admin Cafe com Proposito',
@@ -79,6 +80,10 @@ export default async function AdminEventosPage() {
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
+              <CopyEventLinkButton
+                eventId={event.id}
+                disabled={event.status !== 'published'}
+              />
               <Button asChild variant="outline" size="sm" className="rounded-full">
                 <Link href={`/eventos/${event.id}`}>
                   <Eye className="size-4" />
