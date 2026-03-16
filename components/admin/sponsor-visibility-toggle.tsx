@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { revalidatePaths } from '@/lib/revalidate-client'
 
 interface SponsorVisibilityToggleProps {
   sponsorId: string
@@ -24,6 +25,10 @@ export function SponsorVisibilityToggle({ sponsorId, initialValue }: SponsorVisi
 
     if (error) {
       setChecked(!nextValue)
+    }
+
+    if (!error) {
+      await revalidatePaths(['/'])
     }
 
     setIsLoading(false)

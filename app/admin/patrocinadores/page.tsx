@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -19,12 +18,6 @@ export default async function AdminPatrocinadoresPage({
   const supabase = await createClient()
   const params = (await searchParams) || {}
   const nameFilter = params.nome?.trim() || ''
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/admin/login')
-  }
-
   let query = supabase
     .from('sponsors')
     .select('*')

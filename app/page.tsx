@@ -1,43 +1,20 @@
 import Link from 'next/link'
 import { CalendarDays, Clock3, MapPin, ArrowDown, ArrowRight } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { Button } from '@/components/ui/button'
-import { EVENT_SELECT, normalizeEvent } from '@/lib/events'
-import { PAST_HIGHLIGHTS_SELECT } from '@/lib/past-highlights'
 import { NextEventCountdown } from '@/components/next-event-countdown'
 import { PastHighlightsCarousel } from '@/components/past-highlights-carousel'
 import { SuggestionForm } from '@/components/suggestion-form'
 import { SponsorsCarousel } from '@/components/sponsors-carousel'
+import { getActiveSponsors, getNextPublicEvent, getPublishedHighlights } from '@/lib/public-data'
 
 export default async function HomePage() {
-  const supabase = await createClient()
-  const today = new Date().toISOString().split('T')[0]
-
-  const { data: nextEvent } = await supabase
-    .from('events')
-    .select(EVENT_SELECT)
-    .eq('is_published', true)
-    .gte('date', today)
-    .order('date', { ascending: true })
-    .limit(1)
-    .maybeSingle()
-
-  const { data: highlights } = await supabase
-    .from('past_event_highlights')
-    .select(PAST_HIGHLIGHTS_SELECT)
-    .eq('is_published', true)
-    .order('event_date', { ascending: false, nullsFirst: false })
-    .limit(8)
-
-  const { data: sponsors } = await supabase
-    .from('sponsors')
-    .select('id, title, image_url, is_active, created_at')
-    .eq('is_active', true)
-    .order('created_at', { ascending: false })
-
-  const normalizedNextEvent = nextEvent ? normalizeEvent(nextEvent) : null
+  const [normalizedNextEvent, highlights, sponsors] = await Promise.all([
+    getNextPublicEvent(),
+    getPublishedHighlights(8),
+    getActiveSponsors(),
+  ])
   const formattedDate = normalizedNextEvent
     ? new Date(`${normalizedNextEvent.date}T00:00:00`).toLocaleDateString('pt-BR', {
         weekday: 'long',

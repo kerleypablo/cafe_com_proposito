@@ -1,8 +1,7 @@
-import { createClient } from '@/lib/supabase/server'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { EventCard } from '@/components/event-card'
-import { EVENT_SELECT, normalizeEvent } from '@/lib/events'
+import { getPublicEvents } from '@/lib/public-data'
 
 export const metadata = {
   title: 'Eventos | Cafe com Proposito',
@@ -10,35 +9,7 @@ export const metadata = {
 }
 
 export default async function EventosPage() {
-  const supabase = await createClient()
-  
-  const today = new Date().toISOString().split('T')[0]
-  
-  // Get upcoming events
-  const { data: upcomingEvents, error: upcomingError } = await supabase
-    .from('events')
-    .select(EVENT_SELECT)
-    .eq('is_published', true)
-    .gte('date', today)
-    .order('date', { ascending: true })
-
-  // Get past events
-  const { data: pastEvents, error: pastError } = await supabase
-    .from('events')
-    .select(EVENT_SELECT)
-    .eq('is_published', true)
-    .lt('date', today)
-    .order('date', { ascending: false })
-    .limit(6)
-
-  if (upcomingError || pastError) {
-    console.error('Failed to load public events:', upcomingError || pastError)
-    throw new Error(`Falha ao buscar eventos: ${(upcomingError || pastError)?.message}`)
-  }
-
-  const upcomingWithCount = upcomingEvents?.map(normalizeEvent) || []
-
-  const pastWithCount = pastEvents?.map(normalizeEvent) || []
+  const { upcoming: upcomingWithCount, past: pastWithCount } = await getPublicEvents()
 
   return (
     <div className="flex flex-col min-h-screen">

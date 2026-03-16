@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -10,12 +9,7 @@ export const metadata = {
 }
 
 export default async function NovoPatrocinadorPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/admin/login')
-  }
+  await createClient()
 
   return (
     <div className="space-y-6">

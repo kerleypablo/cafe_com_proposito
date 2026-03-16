@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Plus, Calendar, MapPin, Users, Edit, Eye } from 'lucide-react'
@@ -12,12 +11,7 @@ export const metadata = {
 
 export default async function AdminEventosPage() {
   const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    redirect('/admin/login')
-  }
-  
+
   const { data: events } = await supabase
     .from('events')
     .select(EVENT_SELECT)

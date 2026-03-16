@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect, notFound } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Cake, Mail, MessageCircle, Phone } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,12 +17,6 @@ export default async function AdminParticipanteDetalhePage({
 }) {
   const supabase = await createClient()
   const { id } = await params
-
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    redirect('/admin/login')
-  }
-
   const { data: participant } = await supabase
     .from('participants')
     .select('id, name, email, phone, birthday, save_data')

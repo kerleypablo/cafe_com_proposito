@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Cake, ChevronRight, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
@@ -20,12 +19,7 @@ export default async function AdminParticipantesPage({
   const params = (await searchParams) || {}
   const nameFilter = params.nome?.trim() || ''
   const eventFilter = params.evento?.trim() || ''
-  
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    redirect('/admin/login')
-  }
-  
+
   const { data: eventOptions } = await supabase
     .from('events')
     .select('id, title, date')

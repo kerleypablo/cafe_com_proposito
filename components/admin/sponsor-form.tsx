@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ImagePlus, Trash2 } from 'lucide-react'
+import { revalidatePaths } from '@/lib/revalidate-client'
 
 interface SponsorFormProps {
   sponsor?: {
@@ -125,6 +126,8 @@ export function SponsorForm({ sponsor }: SponsorFormProps) {
       return
     }
 
+    await revalidatePaths(['/'])
+
     router.push('/admin/patrocinadores')
     router.refresh()
   }
@@ -142,6 +145,8 @@ export function SponsorForm({ sponsor }: SponsorFormProps) {
     }
 
     await supabase.from('sponsors').delete().eq('id', sponsor.id)
+
+    await revalidatePaths(['/'])
 
     router.push('/admin/patrocinadores')
     router.refresh()

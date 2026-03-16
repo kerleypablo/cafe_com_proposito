@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { ImagePlus, Trash2, X } from 'lucide-react'
+import { revalidatePaths } from '@/lib/revalidate-client'
 
 interface PastHighlightFormProps {
   highlight?: {
@@ -144,6 +145,11 @@ export function PastHighlightForm({ highlight, initialEvent }: PastHighlightForm
       return
     }
 
+    await revalidatePaths([
+      '/',
+      ...(highlight ? [`/memorias/${highlight.id}`] : []),
+    ])
+
     router.push('/admin/memorias')
     router.refresh()
   }
@@ -174,6 +180,11 @@ export function PastHighlightForm({ highlight, initialEvent }: PastHighlightForm
       setIsDeleting(false)
       return
     }
+
+    await revalidatePaths([
+      '/',
+      `/memorias/${highlight.id}`,
+    ])
 
     router.push('/admin/memorias')
     router.refresh()

@@ -106,7 +106,7 @@ export function AdminSidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 pt-20 lg:pt-4 space-y-1">
+        <nav className="flex-1 overflow-y-auto p-4 pb-28 pt-20 lg:pb-4 lg:pt-4 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon
             const active = isActive(item.href)
@@ -130,7 +130,7 @@ export function AdminSidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-border">
+        <div className="border-t border-border p-4 pb-24 lg:pb-4">
           <Button
             variant="ghost"
             className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground"

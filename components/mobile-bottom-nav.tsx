@@ -9,7 +9,7 @@ const items = [
   { href: '/eventos', label: 'Eventos', icon: CalendarDays },
   { href: '/sobre', label: 'Sobre', icon: Info },
   { href: '/contato', label: 'Contato', icon: Mail },
-  { href: '/admin/login', label: 'Admin', icon: Settings },
+  { href: '/admin', label: 'Admin', icon: Settings },
 ]
 
 export function MobileBottomNav() {
@@ -20,7 +20,7 @@ export function MobileBottomNav() {
       return pathname === '/sobre' || pathname.startsWith('/sobre/')
     }
 
-    if (href === '/admin/login') {
+    if (href === '/admin') {
       return pathname.startsWith('/admin')
     }
 

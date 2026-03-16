@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { EventForm } from '@/components/admin/event-form'
 import { ArrowLeft, Users, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -29,12 +29,7 @@ export async function generateMetadata({ params }: EditEventPageProps) {
 export default async function EditEventPage({ params }: EditEventPageProps) {
   const { id } = await params
   const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    redirect('/admin/login')
-  }
-  
+
   const { data: rawEvent } = await supabase
     .from('events')
     .select(EVENT_SELECT)

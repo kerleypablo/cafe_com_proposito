@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -11,12 +10,6 @@ export const metadata = {
 
 export default async function AdminMemoriasPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/admin/login')
-  }
-
   const { data: highlights } = await supabase
     .from('past_event_highlights')
     .select('*')

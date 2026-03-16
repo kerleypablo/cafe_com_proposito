@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { SuggestionActions } from '@/components/admin/suggestion-actions'
 import { User, Clock } from 'lucide-react'
@@ -10,12 +9,7 @@ export const metadata = {
 
 export default async function AdminSugestoesPage() {
   const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    redirect('/admin/login')
-  }
-  
+
   const { data: suggestions } = await supabase
     .from('suggestions')
     .select('*')

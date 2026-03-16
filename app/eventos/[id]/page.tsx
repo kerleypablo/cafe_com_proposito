@@ -1,4 +1,3 @@
-import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
@@ -6,7 +5,7 @@ import { RegistrationForm } from '@/components/registration-form'
 import { Calendar, MapPin, Users, Clock, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { EVENT_SELECT, normalizeEvent } from '@/lib/events'
+import { getPublicEventById, getPublicEventMetaById } from '@/lib/public-data'
 
 interface EventPageProps {
   params: Promise<{ id: string }>
@@ -14,12 +13,7 @@ interface EventPageProps {
 
 export async function generateMetadata({ params }: EventPageProps) {
   const { id } = await params
-  const supabase = await createClient()
-  const { data: event } = await supabase
-    .from('events')
-    .select('title, description')
-    .eq('id', id)
-    .single()
+  const event = await getPublicEventMetaById(id)
 
   if (!event) {
     return { title: 'Evento nao encontrado | Cafe com Proposito' }
@@ -33,25 +27,11 @@ export async function generateMetadata({ params }: EventPageProps) {
 
 export default async function EventPage({ params }: EventPageProps) {
   const { id } = await params
-  const supabase = await createClient()
-  
-  const { data: rawEvent, error } = await supabase
-    .from('events')
-    .select(EVENT_SELECT)
-    .eq('id', id)
-    .eq('is_published', true)
-    .single()
+  const event = await getPublicEventById(id)
 
-  if (error) {
-    console.error('Failed to load public event:', error)
-    throw new Error(`Falha ao buscar evento: ${error.message}`)
-  }
-
-  if (!rawEvent) {
+  if (!event) {
     notFound()
   }
-
-  const event = normalizeEvent(rawEvent)
 
   const registrationCount = event.registrations?.[0]?.count || 0
   const spotsLeft = event.max_participants 

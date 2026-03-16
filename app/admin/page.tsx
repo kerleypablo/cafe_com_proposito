@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Calendar, Users, UserCheck, Lightbulb, Cake, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
@@ -12,12 +11,7 @@ export const metadata = {
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    redirect('/admin/login')
-  }
-  
+
   const today = new Date().toISOString().split('T')[0]
 
   // Get stats

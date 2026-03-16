@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, CalendarDays } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -15,12 +14,6 @@ interface NovaMemoriaPageProps {
 
 export default async function NovaMemoriaPage({ searchParams }: NovaMemoriaPageProps) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/admin/login')
-  }
-
   const resolvedSearchParams = searchParams ? await searchParams : undefined
   const selectedEventId = resolvedSearchParams?.eventId
   const today = new Date().toISOString().split('T')[0]

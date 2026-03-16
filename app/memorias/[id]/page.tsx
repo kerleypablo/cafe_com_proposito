@@ -1,12 +1,11 @@
-import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { Button } from '@/components/ui/button'
 import { CalendarDays, Download, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import { PAST_HIGHLIGHTS_SELECT } from '@/lib/past-highlights'
 import { MemoryGallery } from '@/components/memory-gallery'
+import { getPublicMemoryById } from '@/lib/public-data'
 
 interface MemoryPageProps {
   params: Promise<{ id: string }>
@@ -14,14 +13,7 @@ interface MemoryPageProps {
 
 export default async function MemoryPage({ params }: MemoryPageProps) {
   const { id } = await params
-  const supabase = await createClient()
-
-  const { data: memory } = await supabase
-    .from('past_event_highlights')
-    .select(PAST_HIGHLIGHTS_SELECT)
-    .eq('id', id)
-    .eq('is_published', true)
-    .single()
+  const memory = await getPublicMemoryById(id)
 
   if (!memory) {
     notFound()

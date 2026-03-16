@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Trash2 } from 'lucide-react'
+import { revalidatePaths } from '@/lib/revalidate-client'
 
 interface EventFormProps {
   event?: {
@@ -47,6 +48,7 @@ export function EventForm({ event }: EventFormProps) {
         ? parseInt(formData.get('max_participants') as string) 
         : null,
       image_url: formData.get('image_url') as string || null,
+      status: isPublished ? 'published' : 'draft',
       is_published: isPublished,
     }
 
@@ -77,6 +79,12 @@ export function EventForm({ event }: EventFormProps) {
       }
     }
 
+    await revalidatePaths([
+      '/',
+      '/eventos',
+      ...(event ? [`/eventos/${event.id}`] : []),
+    ])
+
     router.push('/admin/eventos')
     router.refresh()
   }
@@ -98,6 +106,12 @@ export function EventForm({ event }: EventFormProps) {
       setIsDeleting(false)
       return
     }
+
+    await revalidatePaths([
+      '/',
+      '/eventos',
+      `/eventos/${event.id}`,
+    ])
 
     router.push('/admin/eventos')
     router.refresh()

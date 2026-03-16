@@ -21,7 +21,8 @@ export function Header() {
               width={104}
               height={104}
               priority
-              className="h-14 w-auto sm:h-16"
+              className="h-14 w-auto sm:h-55"
+              style={{ marginLeft: '-30px' }}
             />
           </Link>
 
