@@ -29,9 +29,9 @@ export default async function EventosPage() {
 
           {/* Upcoming Events */}
           <section className="mb-16">
-            <h2 className="font-serif text-2xl font-semibold text-foreground mb-6">
-              Proximos Encontros
-            </h2>
+              <h2 className="font-serif text-2xl font-semibold text-foreground mb-6">
+                Proximos Encontros
+              </h2>
             {upcomingWithCount.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {upcomingWithCount.map((event) => (

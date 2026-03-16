@@ -21,7 +21,7 @@ export default async function AdminSugestoesPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-serif text-3xl font-bold text-foreground">Mensagens</h1>
+        <h1 className="font-serif text-3xl font-bold text-primary">Mensagens</h1>
         <p className="text-muted-foreground">
           Sugestoes, pedidos de oracao e agradecimentos enviados pela comunidade
         </p>

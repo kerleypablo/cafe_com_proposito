@@ -23,7 +23,7 @@ export default async function AdminEventosPage() {
   const upcomingEvents = eventsWithCount.filter((event) => event.date >= today)
   const pastEvents = eventsWithCount.filter((event) => event.date < today)
 
-  const renderEventCard = (event: (typeof eventsWithCount)[number]) => {
+  const renderEventCard = (event: (typeof eventsWithCount)[number], isPastSection = false) => {
     const eventDate = new Date(event.date)
     const formattedDate = eventDate.toLocaleDateString('pt-BR', {
       day: 'numeric',
@@ -36,7 +36,7 @@ export default async function AdminEventosPage() {
       : 'bg-muted text-muted-foreground'
 
     return (
-      <Card key={event.id}>
+      <Card key={event.id} className={isPastSection ? 'opacity-65 saturate-75' : ''}>
         <CardContent className="p-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             {event.image_url && (
@@ -102,7 +102,7 @@ export default async function AdminEventosPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-foreground">Eventos</h1>
+          <h1 className="font-serif text-3xl font-bold text-primary">Eventos</h1>
           <p className="text-muted-foreground">Gerencie os encontros do Cafe com Proposito</p>
         </div>
         <Button asChild className="rounded-full">
@@ -122,7 +122,7 @@ export default async function AdminEventosPage() {
             </div>
             {upcomingEvents.length > 0 ? (
               <div className="grid gap-4">
-                {upcomingEvents.map(renderEventCard)}
+                {upcomingEvents.map((event) => renderEventCard(event, false))}
               </div>
             ) : (
               <Card>
@@ -140,7 +140,7 @@ export default async function AdminEventosPage() {
             </div>
             {pastEvents.length > 0 ? (
               <div className="grid gap-4">
-                {pastEvents.map(renderEventCard)}
+                {pastEvents.map((event) => renderEventCard(event, true))}
               </div>
             ) : (
               <Card>

@@ -102,7 +102,7 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-serif text-3xl font-bold text-foreground">Dashboard</h1>
+        <h1 className="font-serif text-3xl font-bold text-primary">Dashboard</h1>
         <p className="text-muted-foreground">Visao geral do Cafe com Proposito</p>
       </div>
 

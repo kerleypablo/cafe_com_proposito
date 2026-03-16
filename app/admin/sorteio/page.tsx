@@ -23,7 +23,7 @@ export default async function AdminSorteioPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="font-serif text-3xl font-bold text-foreground">Sorteio</h1>
+        <h1 className="font-serif text-3xl font-bold text-primary">Sorteio</h1>
         <p className="max-w-2xl text-muted-foreground">
           Escolha entre sortear uma participante inscrita em um evento ou gerar um numero aleatorio com animacao.
         </p>

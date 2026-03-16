@@ -34,41 +34,48 @@ export function EventCard({ event }: EventCardProps) {
     : null
 
   const isFull = spotsLeft !== null && spotsLeft <= 0
+  const isPast = eventDate < new Date(new Date().setHours(0, 0, 0, 0))
 
   return (
-    <Card className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow duration-300">
+    <Card
+      className={`overflow-hidden border-0 transition-all duration-300 ${
+        isPast
+          ? 'bg-card/85 shadow-sm hover:shadow-md'
+          : 'shadow-md hover:shadow-lg'
+      }`}
+    >
       <div className="relative h-48 overflow-hidden">
         <img
           src={imageUrl}
           alt={event.title}
-          className="w-full h-full object-cover"
+          className={`h-full w-full object-cover ${isPast ? 'opacity-70 saturate-50' : ''}`}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 to-transparent" />
+        <div className={`absolute inset-0 ${isPast ? 'bg-gradient-to-t from-background/35 via-background/10 to-transparent' : 'bg-gradient-to-t from-foreground/20 to-transparent'}`} />
       </div>
       <CardHeader className="pb-2">
-        <CardTitle className="font-serif text-xl text-foreground">
+        <CardTitle className={`font-serif text-xl ${isPast ? 'text-primary/85' : 'text-primary'}`}>
           {event.title}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {event.description && (
-          <p className="text-muted-foreground text-sm line-clamp-2">
+          <p className={`text-sm line-clamp-2 ${isPast ? 'text-muted-foreground/80' : 'text-muted-foreground'}`}>
             {event.description}
           </p>
         )}
         <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className={`flex items-center gap-2 text-sm ${isPast ? 'text-muted-foreground/80' : 'text-muted-foreground'}`}>
             <Calendar className="size-4 text-primary" />
             <span className="capitalize">{formattedDate}</span>
             <span className="text-primary">|</span>
             <span>{event.time}</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className={`flex items-center gap-2 text-sm ${isPast ? 'text-muted-foreground/80' : 'text-muted-foreground'}`}>
             <MapPin className="size-4 text-primary" />
             <span>{event.location}</span>
           </div>
           {event.max_participants && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className={`flex items-center gap-2 text-sm ${isPast ? 'text-muted-foreground/80' : 'text-muted-foreground'}`}>
               <Users className="size-4 text-primary" />
               <span>
                 {isFull 
@@ -82,6 +89,7 @@ export function EventCard({ event }: EventCardProps) {
       <CardFooter>
         <Button 
           asChild 
+          variant={isPast ? 'outline' : 'default'}
           className="w-full rounded-full"
           disabled={isFull}
         >

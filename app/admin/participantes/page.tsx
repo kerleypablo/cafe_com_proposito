@@ -56,7 +56,7 @@ export default async function AdminParticipantesPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-3xl font-bold text-foreground">Participantes</h1>
+        <h1 className="font-serif text-3xl font-bold text-primary">Participantes</h1>
         <p className="text-muted-foreground">
           Todas as pessoas que ja se inscreveram em eventos
         </p>

@@ -19,7 +19,7 @@ export default async function NovoEventoPage() {
             Voltar
           </Link>
         </Button>
-        <h1 className="font-serif text-3xl font-bold text-foreground">Novo Evento</h1>
+        <h1 className="font-serif text-3xl font-bold text-primary">Novo Evento</h1>
         <p className="text-muted-foreground">Crie um novo encontro para o Cafe com Proposito</p>
       </div>
 

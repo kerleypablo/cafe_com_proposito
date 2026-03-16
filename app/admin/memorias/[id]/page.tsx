@@ -35,7 +35,7 @@ export default async function AdminMemoryPage({ params }: AdminMemoryPageProps) 
             Voltar
           </Link>
         </Button>
-        <h1 className="font-serif text-3xl font-bold text-foreground">Editar memoria</h1>
+        <h1 className="font-serif text-3xl font-bold text-primary">Editar memoria</h1>
         <p className="text-muted-foreground">{highlight.title}</p>
       </div>
 

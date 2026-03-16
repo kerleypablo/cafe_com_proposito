@@ -33,7 +33,7 @@ export default async function AdminPatrocinadoresPage({
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-foreground">Patrocinadores</h1>
+          <h1 className="font-serif text-3xl font-bold text-primary">Patrocinadores</h1>
           <p className="text-muted-foreground">
             Gerencie as logos cadastradas e marque com clareza quais devem aparecer no carrossel publico.
           </p>

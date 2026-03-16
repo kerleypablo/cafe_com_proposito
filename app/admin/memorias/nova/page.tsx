@@ -38,14 +38,14 @@ export default async function NovaMemoriaPage({ searchParams }: NovaMemoriaPageP
             Voltar
           </Link>
         </Button>
-        <h1 className="font-serif text-3xl font-bold text-foreground">Nova memoria</h1>
+        <h1 className="font-serif text-3xl font-bold text-primary">Nova memoria</h1>
         <p className="text-muted-foreground">Crie um conteudo para a secao de eventos anteriores.</p>
       </div>
 
       {pastEvents && pastEvents.length > 0 && (
         <div className="rounded-2xl border border-border bg-card p-6">
           <div className="mb-4 space-y-1">
-            <h2 className="font-serif text-2xl text-foreground">Criar a partir de um evento encerrado</h2>
+            <h2 className="font-serif text-2xl text-primary">Criar a partir de um evento encerrado</h2>
             <p className="text-sm text-muted-foreground">
               Escolha um evento passado para puxar titulo, data, descricao e imagem inicial.
             </p>

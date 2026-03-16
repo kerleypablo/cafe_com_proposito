@@ -58,7 +58,7 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
             Voltar
           </Link>
         </Button>
-        <h1 className="font-serif text-3xl font-bold text-foreground">Editar Evento</h1>
+        <h1 className="font-serif text-3xl font-bold text-primary">Editar Evento</h1>
         <p className="text-muted-foreground">{event.title}</p>
       </div>
 

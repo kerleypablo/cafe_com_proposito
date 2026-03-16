@@ -20,7 +20,7 @@ export default async function NovoPatrocinadorPage() {
             Voltar
           </Link>
         </Button>
-        <h1 className="font-serif text-3xl font-bold text-foreground">Novo patrocinador</h1>
+        <h1 className="font-serif text-3xl font-bold text-primary">Novo patrocinador</h1>
         <p className="text-muted-foreground">Adicione uma logo para o carrossel publico.</p>
       </div>
 

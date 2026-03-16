@@ -35,7 +35,7 @@ export default async function AdminSponsorPage({ params }: AdminSponsorPageProps
             Voltar
           </Link>
         </Button>
-        <h1 className="font-serif text-3xl font-bold text-foreground">Editar patrocinador</h1>
+        <h1 className="font-serif text-3xl font-bold text-primary">Editar patrocinador</h1>
         <p className="text-muted-foreground">{sponsor.title}</p>
       </div>
 
