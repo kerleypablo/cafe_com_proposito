@@ -6,6 +6,7 @@ import { RegistrationForm } from '@/components/registration-form'
 import { Calendar, MapPin, Users, Clock, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { EVENT_SELECT, normalizeEvent } from '@/lib/events'
 
 interface EventPageProps {
   params: Promise<{ id: string }>
@@ -34,19 +35,23 @@ export default async function EventPage({ params }: EventPageProps) {
   const { id } = await params
   const supabase = await createClient()
   
-  const { data: event } = await supabase
+  const { data: rawEvent, error } = await supabase
     .from('events')
-    .select(`
-      *,
-      registrations:registrations(count)
-    `)
+    .select(EVENT_SELECT)
     .eq('id', id)
-    .eq('status', 'published')
+    .eq('is_published', true)
     .single()
 
-  if (!event) {
+  if (error) {
+    console.error('Failed to load public event:', error)
+    throw new Error(`Falha ao buscar evento: ${error.message}`)
+  }
+
+  if (!rawEvent) {
     notFound()
   }
+
+  const event = normalizeEvent(rawEvent)
 
   const registrationCount = event.registrations?.[0]?.count || 0
   const spotsLeft = event.max_participants 
@@ -55,6 +60,7 @@ export default async function EventPage({ params }: EventPageProps) {
   const isFull = spotsLeft !== null && spotsLeft <= 0
 
   const eventDate = new Date(event.date)
+  const imageUrl = event.image_url || '/background.png'
   const formattedDate = eventDate.toLocaleDateString('pt-BR', {
     weekday: 'long',
     day: 'numeric',
@@ -85,15 +91,13 @@ export default async function EventPage({ params }: EventPageProps) {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Event Details */}
             <div className="lg:col-span-2 space-y-6">
-              {event.image_url && (
-                <div className="relative h-64 md:h-80 rounded-2xl overflow-hidden">
-                  <img
-                    src={event.image_url}
-                    alt={event.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
+              <div className="relative h-64 overflow-hidden rounded-2xl md:h-80">
+                <img
+                  src={imageUrl}
+                  alt={event.title}
+                  className="h-full w-full object-cover"
+                />
+              </div>
 
               <div>
                 <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">

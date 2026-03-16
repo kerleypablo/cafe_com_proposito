@@ -1,14 +1,16 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { 
-  Coffee, 
   LayoutDashboard, 
   Calendar, 
   Users, 
   Lightbulb, 
+  Images,
+  Handshake,
   LogOut,
   Menu,
   X
@@ -20,8 +22,10 @@ import { useState } from 'react'
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/eventos', label: 'Eventos', icon: Calendar },
+  { href: '/admin/memorias', label: 'Memorias', icon: Images },
   { href: '/admin/participantes', label: 'Participantes', icon: Users },
   { href: '/admin/sugestoes', label: 'Sugestoes', icon: Lightbulb },
+  { href: '/admin/patrocinadores', label: 'Patrocinadores', icon: Handshake },
 ]
 
 export function AdminSidebar() {
@@ -49,10 +53,14 @@ export function AdminSidebar() {
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-card border-b border-border px-4 py-3">
         <div className="flex items-center justify-between">
           <Link href="/admin" className="flex items-center gap-2">
-            <div className="flex items-center justify-center size-8 rounded-full bg-primary">
-              <Coffee className="size-4 text-primary-foreground" />
-            </div>
-            <span className="font-serif font-semibold text-foreground">Admin</span>
+            <Image
+              src="/icone_sfundo.png"
+              alt="Cafe com Proposito"
+              width={44}
+              height={44}
+              className="h-11 w-auto"
+            />
+            <span className="font-serif font-semibold text-foreground">Cafe com Proposito</span>
           </Link>
           <Button
             variant="ghost"
@@ -81,9 +89,13 @@ export function AdminSidebar() {
         {/* Logo */}
         <div className="p-6 border-b border-border hidden lg:block">
           <Link href="/admin" className="flex items-center gap-2">
-            <div className="flex items-center justify-center size-10 rounded-full bg-primary">
-              <Coffee className="size-5 text-primary-foreground" />
-            </div>
+            <Image
+              src="/icone_sfundo.png"
+              alt="Cafe com Proposito"
+              width={64}
+              height={64}
+              className="h-14 w-auto"
+            />
             <div>
               <span className="font-serif font-semibold text-foreground block">
                 Cafe com Proposito

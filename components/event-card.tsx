@@ -22,6 +22,7 @@ interface EventCardProps {
 
 export function EventCard({ event }: EventCardProps) {
   const eventDate = new Date(event.date)
+  const imageUrl = event.image_url || '/background.png'
   const formattedDate = eventDate.toLocaleDateString('pt-BR', {
     weekday: 'long',
     day: 'numeric',
@@ -36,16 +37,14 @@ export function EventCard({ event }: EventCardProps) {
 
   return (
     <Card className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow duration-300">
-      {event.image_url && (
-        <div className="relative h-48 overflow-hidden">
-          <img
-            src={event.image_url}
-            alt={event.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 to-transparent" />
-        </div>
-      )}
+      <div className="relative h-48 overflow-hidden">
+        <img
+          src={imageUrl}
+          alt={event.title}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 to-transparent" />
+      </div>
       <CardHeader className="pb-2">
         <CardTitle className="font-serif text-xl text-foreground">
           {event.title}

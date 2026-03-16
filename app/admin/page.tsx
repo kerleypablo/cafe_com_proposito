@@ -1,8 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Calendar, Users, UserCheck, Lightbulb } from 'lucide-react'
+import { Calendar, Users, UserCheck, Lightbulb, Cake, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
+import { EVENT_SELECT, normalizeEvent } from '@/lib/events'
+import { buildWhatsappLink } from '@/lib/whatsapp'
 
 export const metadata = {
   title: 'Dashboard | Admin Cafe com Proposito',
@@ -46,13 +48,29 @@ export default async function AdminDashboardPage() {
   // Get upcoming events
   const { data: nextEvents } = await supabase
     .from('events')
-    .select(`
-      *,
-      registrations:registrations(count)
-    `)
+    .select(EVENT_SELECT)
     .gte('date', today)
     .order('date', { ascending: true })
     .limit(3)
+
+  const { data: participantsWithBirthday } = await supabase
+    .from('participants')
+    .select('id, name, phone, birthday')
+    .not('birthday', 'is', null)
+
+  const normalizedNextEvents = nextEvents?.map(normalizeEvent) || []
+  const currentMonth = new Date().getMonth()
+  const birthdayPeople = (participantsWithBirthday || [])
+    .filter((participant) => {
+      if (!participant.birthday) return false
+      const birthday = new Date(`${participant.birthday}T00:00:00`)
+      return birthday.getMonth() === currentMonth
+    })
+    .sort((a, b) => {
+      const dayA = new Date(`${a.birthday}T00:00:00`).getDate()
+      const dayB = new Date(`${b.birthday}T00:00:00`).getDate()
+      return dayA - dayB
+    })
 
   const stats = [
     { 
@@ -80,7 +98,7 @@ export default async function AdminDashboardPage() {
       href: '/admin/participantes'
     },
     { 
-      label: 'Sugestoes Pendentes', 
+      label: 'Novas Mensagens', 
       value: pendingSuggestions || 0, 
       icon: Lightbulb,
       href: '/admin/sugestoes'
@@ -118,22 +136,22 @@ export default async function AdminDashboardPage() {
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Upcoming Events */}
         <Card>
           <CardHeader>
             <CardTitle className="font-serif">Proximos Eventos</CardTitle>
           </CardHeader>
           <CardContent>
-            {nextEvents && nextEvents.length > 0 ? (
+            {normalizedNextEvents.length > 0 ? (
               <div className="space-y-4">
-                {nextEvents.map((event) => {
+                {normalizedNextEvents.map((event) => {
                   const eventDate = new Date(event.date)
                   const formattedDate = eventDate.toLocaleDateString('pt-BR', {
                     day: 'numeric',
                     month: 'short',
                   })
-                  const registrationCount = event.registrations?.[0]?.count || 0
+                  const registrationCount = event.registration_count || 0
                   
                   return (
                     <Link 
@@ -194,6 +212,58 @@ export default async function AdminDashboardPage() {
             ) : (
               <p className="text-muted-foreground text-center py-4">
                 Nenhuma inscricao recente
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-serif flex items-center gap-2">
+              <Cake className="size-5" />
+              Aniversariantes do Mes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {birthdayPeople.length > 0 ? (
+              <div className="space-y-3">
+                {birthdayPeople.map((participant) => {
+                  const birthdayDate = new Date(`${participant.birthday}T00:00:00`)
+                  const formattedBirthday = birthdayDate.toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                  })
+                  const whatsappLink = buildWhatsappLink(participant.phone)
+
+                  return (
+                    <div
+                      key={participant.id}
+                      className="flex items-center justify-between rounded-xl bg-secondary/50 p-3"
+                    >
+                      <div>
+                        <p className="font-medium text-foreground">{participant.name}</p>
+                        <p className="text-sm text-muted-foreground">{formattedBirthday}</p>
+                      </div>
+                      {whatsappLink ? (
+                        <Link
+                          href={whatsappLink}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex size-9 items-center justify-center rounded-full bg-[#25D366]/10 text-[#25D366] transition-colors hover:bg-[#25D366]/20"
+                          aria-label={`Conversar com ${participant.name} no WhatsApp`}
+                        >
+                          <MessageCircle className="size-4" />
+                        </Link>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">Sem WhatsApp</span>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-center py-4">
+                Nenhum aniversariante cadastrado neste mes
               </p>
             )}
           </CardContent>

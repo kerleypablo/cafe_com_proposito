@@ -20,6 +20,7 @@ interface EventFormProps {
     max_participants: number | null
     image_url: string | null
     status: string
+    is_published?: boolean
   }
 }
 
@@ -35,6 +36,7 @@ export function EventForm({ event }: EventFormProps) {
     setError(null)
 
     const formData = new FormData(e.currentTarget)
+    const isPublished = (formData.get('status') as string) === 'published'
     const data = {
       title: formData.get('title') as string,
       description: formData.get('description') as string || null,
@@ -45,7 +47,7 @@ export function EventForm({ event }: EventFormProps) {
         ? parseInt(formData.get('max_participants') as string) 
         : null,
       image_url: formData.get('image_url') as string || null,
-      status: formData.get('status') as string,
+      is_published: isPublished,
     }
 
     const supabase = createClient()

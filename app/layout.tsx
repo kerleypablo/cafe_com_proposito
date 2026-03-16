@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Playfair_Display, Lato } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import '@splidejs/react-splide/css'
 import './globals.css'
 
 const playfair = Playfair_Display({ 
@@ -20,7 +21,6 @@ export const metadata: Metadata = {
   title: 'Café com Propósito',
   description: 'Encontros mensais para mulheres que buscam crescimento pessoal, fé e autocuidado',
   generator: 'v0.app',
-  manifest: '/manifest.json',
   icons: {
     icon: [
       {
@@ -55,7 +55,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${playfair.variable} ${lato.variable}`}>
-      <body className="font-sans antialiased min-h-screen">
+      <body className="min-h-screen overflow-x-hidden font-sans antialiased">
         {children}
         <Analytics />
       </body>

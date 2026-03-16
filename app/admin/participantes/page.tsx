@@ -1,7 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
-import { Mail, Phone, Calendar } from 'lucide-react'
+import { Mail, Phone, Calendar, Cake, BadgeCheck, MessageCircle } from 'lucide-react'
+import Link from 'next/link'
+import { buildWhatsappLink } from '@/lib/whatsapp'
 
 export const metadata = {
   title: 'Participantes | Admin Cafe com Proposito',
@@ -42,6 +44,7 @@ export default async function AdminParticipantesPage() {
             const confirmedEvents = participant.registrations?.filter(
               (r: { status: string }) => r.status === 'confirmed'
             ).length || 0
+            const whatsappLink = buildWhatsappLink(participant.phone)
 
             return (
               <Card key={participant.id}>
@@ -64,14 +67,47 @@ export default async function AdminParticipantesPage() {
                             <span>{participant.phone}</span>
                           </div>
                         )}
+                        {participant.birthday && (
+                          <div className="flex items-center gap-1">
+                            <Cake className="size-4" />
+                            <span>
+                              {new Date(`${participant.birthday}T00:00:00`).toLocaleDateString('pt-BR', {
+                                day: '2-digit',
+                                month: '2-digit',
+                              })}
+                            </span>
+                          </div>
+                        )}
                         <div className="flex items-center gap-1">
                           <Calendar className="size-4" />
                           <span>{confirmedEvents} eventos confirmados</span>
                         </div>
                       </div>
+
+                      {participant.save_data && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs text-primary">
+                            <BadgeCheck className="size-3" />
+                            Dados salvos
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Event Tags */}
+                    <div className="flex items-center gap-3">
+                      {whatsappLink && (
+                        <Link
+                          href={whatsappLink}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex size-10 items-center justify-center rounded-full bg-[#25D366]/10 text-[#25D366] transition-colors hover:bg-[#25D366]/20"
+                          aria-label={`Conversar com ${participant.name} no WhatsApp`}
+                        >
+                          <MessageCircle className="size-5" />
+                        </Link>
+                      )}
+
                     {participant.registrations && participant.registrations.length > 0 && (
                       <div className="flex flex-wrap gap-2">
                         {participant.registrations.slice(0, 3).map((reg: { 
@@ -93,6 +129,7 @@ export default async function AdminParticipantesPage() {
                         )}
                       </div>
                     )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

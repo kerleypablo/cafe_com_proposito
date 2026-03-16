@@ -1,0 +1,38 @@
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { SponsorForm } from '@/components/admin/sponsor-form'
+
+export const metadata = {
+  title: 'Novo Patrocinador | Admin Cafe com Proposito',
+}
+
+export default async function NovoPatrocinadorPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/admin/login')
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <Button asChild variant="ghost" className="mb-4">
+          <Link href="/admin/patrocinadores">
+            <ArrowLeft className="size-4" />
+            Voltar
+          </Link>
+        </Button>
+        <h1 className="font-serif text-3xl font-bold text-foreground">Novo patrocinador</h1>
+        <p className="text-muted-foreground">Adicione uma logo para o carrossel publico.</p>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-card p-6">
+        <SponsorForm />
+      </div>
+    </div>
+  )
+}

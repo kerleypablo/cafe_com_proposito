@@ -1,160 +1,178 @@
+import Link from 'next/link'
+import { CalendarDays, Clock3, MapPin, ArrowDown, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
-import { EventCard } from '@/components/event-card'
 import { Button } from '@/components/ui/button'
-import { Coffee, Users, Heart, Sparkles, ArrowRight } from 'lucide-react'
-import Link from 'next/link'
+import { EVENT_SELECT, normalizeEvent } from '@/lib/events'
+import { PAST_HIGHLIGHTS_SELECT } from '@/lib/past-highlights'
+import { NextEventCountdown } from '@/components/next-event-countdown'
+import { PastHighlightsCarousel } from '@/components/past-highlights-carousel'
+import { SuggestionForm } from '@/components/suggestion-form'
+import { SponsorsCarousel } from '@/components/sponsors-carousel'
 
 export default async function HomePage() {
   const supabase = await createClient()
-  
-  // Get upcoming published events
   const today = new Date().toISOString().split('T')[0]
-  const { data: events } = await supabase
+
+  const { data: nextEvent } = await supabase
     .from('events')
-    .select(`
-      *,
-      registrations:registrations(count)
-    `)
-    .eq('status', 'published')
+    .select(EVENT_SELECT)
+    .eq('is_published', true)
     .gte('date', today)
     .order('date', { ascending: true })
-    .limit(3)
+    .limit(1)
+    .maybeSingle()
 
-  const eventsWithCount = events?.map(event => ({
-    ...event,
-    registration_count: event.registrations?.[0]?.count || 0
-  })) || []
+  const { data: highlights } = await supabase
+    .from('past_event_highlights')
+    .select(PAST_HIGHLIGHTS_SELECT)
+    .eq('is_published', true)
+    .order('event_date', { ascending: false, nullsFirst: false })
+    .limit(8)
+
+  const { data: sponsors } = await supabase
+    .from('sponsors')
+    .select('id, title, image_url, is_active, created_at')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+
+  const normalizedNextEvent = nextEvent ? normalizeEvent(nextEvent) : null
+  const formattedDate = normalizedNextEvent
+    ? new Date(`${normalizedNextEvent.date}T00:00:00`).toLocaleDateString('pt-BR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    : null
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      
+
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-secondary/50 to-background py-16 md:py-24">
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-1/2 -right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
-            <div className="absolute -bottom-1/2 -left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-          </div>
-          
-          <div className="container mx-auto px-4 relative">
-            <div className="max-w-2xl mx-auto text-center">
-              <div className="inline-flex items-center justify-center size-20 rounded-full bg-primary/10 mb-6">
-                <Coffee className="size-10 text-primary" />
+        <section
+          className="relative overflow-hidden"
+          style={{
+            minHeight: 'calc(100vh - 6rem)',
+            backgroundImage:
+              "linear-gradient(120deg, rgba(21, 15, 14, 0.68), rgba(46, 28, 23, 0.38)), url('/background.png')",
+            backgroundPosition: 'center 30%',
+            backgroundSize: 'cover',
+          }}
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),transparent_36%)]" />
+          <div className="relative mx-auto flex min-h-[calc(100vh-6rem)] max-w-7xl items-end px-4 py-10 md:px-8 md:py-14">
+            <div className="grid w-full gap-8 lg:grid-cols-[0.9fr_0.72fr] lg:items-end lg:justify-between">
+              <div className="max-w-2xl space-y-5 text-white">
+                <p className="text-sm uppercase tracking-[0.45em] text-white/70">
+                  Cafe com Proposito
+                </p>
+                <h1 className="font-serif text-4xl leading-[0.98] md:text-6xl">
+                  Encontros com beleza, profundidade e presença real.
+                </h1>
+                <p className="max-w-xl text-sm leading-7 text-white/82 md:text-base">
+                  Um espaço para mulheres que desejam viver conversas significativas, momentos
+                  de cuidado e encontros que continuam ecoando depois do café.
+                </p>
+
+                <div className="flex flex-wrap gap-3">
+                  <Button asChild size="lg" className="rounded-full bg-white text-foreground hover:bg-white/90">
+                    <Link href={normalizedNextEvent ? `/eventos/${normalizedNextEvent.id}` : '/eventos'}>
+                      {normalizedNextEvent ? 'Quero me inscrever' : 'Ver eventos'}
+                      <ArrowRight className="size-4" />
+                    </Link>
+                  </Button>
+                  <Button asChild size="lg" variant="outline" className="rounded-full border-white/35 bg-white/10 text-white hover:bg-white/15">
+                    <Link href="/sobre">Conhecer a historia</Link>
+                  </Button>
+                </div>
+
+                <div className="inline-flex items-center gap-2 pt-6 text-sm uppercase tracking-[0.35em] text-white/60">
+                  Role para baixo
+                  <ArrowDown className="size-4" />
+                </div>
               </div>
-              <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 text-balance">
-                Cafe com Proposito
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed text-pretty">
-                Um espaco acolhedor para mulheres que buscam crescimento pessoal, 
-                fe e autocuidado. Junte-se a nos em encontros mensais 
-                cheios de significado.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button asChild size="lg" className="rounded-full">
-                  <Link href="/eventos">
-                    Ver Proximos Eventos
-                    <ArrowRight className="size-4" />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="rounded-full">
-                  <Link href="/sugestoes">
-                    Enviar Sugestao
-                  </Link>
-                </Button>
+
+              <div className="max-w-md justify-self-end rounded-[2rem] border border-white/15 bg-black/25 p-5 shadow-[0_30px_90px_-40px_rgba(0,0,0,0.45)] backdrop-blur-md">
+                {normalizedNextEvent ? (
+                  <div className="space-y-5 text-white">
+                    <div className="space-y-2">
+                      <p className="text-sm uppercase tracking-[0.35em] text-white/60">Proximo encontro</p>
+                      <h2 className="font-serif text-2xl md:text-3xl">{normalizedNextEvent.title}</h2>
+                      {normalizedNextEvent.description && (
+                        <p className="line-clamp-3 text-sm leading-6 text-white/78">
+                          {normalizedNextEvent.description}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-3 text-sm text-white/82">
+                      {formattedDate && (
+                        <div className="flex items-center gap-3">
+                          <CalendarDays className="size-4 text-white" />
+                          <span className="capitalize">{formattedDate}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-3">
+                        <Clock3 className="size-4 text-white" />
+                        <span>{normalizedNextEvent.time}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <MapPin className="size-4 text-white" />
+                        <span>{normalizedNextEvent.location}</span>
+                      </div>
+                    </div>
+
+                    <NextEventCountdown date={normalizedNextEvent.date} time={normalizedNextEvent.time} />
+
+                    <Button asChild className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
+                      <Link href={`/eventos/${normalizedNextEvent.id}`}>
+                        Inscrever-se no proximo evento
+                        <ArrowRight className="size-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4 text-white">
+                    <p className="text-sm uppercase tracking-[0.35em] text-white/60">Proximo encontro</p>
+                    <h2 className="font-serif text-3xl">Em breve teremos uma nova data</h2>
+                    <p className="text-sm leading-7 text-white/78">
+                      Assim que o próximo encontro for publicado, ele aparecerá aqui com data, contagem regressiva e botão de inscrição.
+                    </p>
+                    <Button asChild className="rounded-full bg-white text-foreground hover:bg-white/90">
+                      <Link href="/eventos">Ver eventos</Link>
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </section>
 
-        {/* Features Section */}
-        <section className="py-16 md:py-20">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="flex flex-col items-center text-center p-6">
-                <div className="flex items-center justify-center size-14 rounded-full bg-primary/10 mb-4">
-                  <Users className="size-7 text-primary" />
-                </div>
-                <h3 className="font-serif text-xl font-semibold text-foreground mb-2">
-                  Comunidade
-                </h3>
-                <p className="text-muted-foreground">
-                  Conecte-se com mulheres que compartilham dos mesmos valores e propositos.
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center p-6">
-                <div className="flex items-center justify-center size-14 rounded-full bg-accent/20 mb-4">
-                  <Heart className="size-7 text-accent" />
-                </div>
-                <h3 className="font-serif text-xl font-semibold text-foreground mb-2">
-                  Autocuidado
-                </h3>
-                <p className="text-muted-foreground">
-                  Momentos dedicados ao seu bem-estar fisico, emocional e espiritual.
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center p-6">
-                <div className="flex items-center justify-center size-14 rounded-full bg-primary/10 mb-4">
-                  <Sparkles className="size-7 text-primary" />
-                </div>
-                <h3 className="font-serif text-xl font-semibold text-foreground mb-2">
-                  Crescimento
-                </h3>
-                <p className="text-muted-foreground">
-                  Temas inspiradores que promovem reflexao e transformacao pessoal.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+        <section className="bg-[linear-gradient(180deg,#fffaf5_0%,#f5eee5_100%)] px-4 py-16 md:px-8 md:py-24">
+          <div className="mx-auto max-w-7xl space-y-16">
+            <PastHighlightsCarousel highlights={highlights || []} />
 
-        {/* Upcoming Events Section */}
-        {eventsWithCount.length > 0 && (
-          <section className="py-16 md:py-20 bg-secondary/30">
-            <div className="container mx-auto px-4">
-              <div className="text-center mb-12">
-                <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
-                  Proximos Encontros
+            <div className="grid gap-8 rounded-[2.4rem] bg-[linear-gradient(135deg,#f5eadc_0%,#fffaf5_58%,#f2e5d7_100%)] p-6 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.18)] lg:grid-cols-[1fr_1.15fr] lg:items-start lg:p-8">
+              <div className="space-y-4">
+                <p className="text-sm uppercase tracking-[0.35em] text-primary/70">Mensagens</p>
+                <h2 className="font-serif text-3xl text-foreground md:text-4xl">
+                  Sugestoes, oracoes e agradecimentos
                 </h2>
-                <p className="text-muted-foreground max-w-md mx-auto">
-                  Confira nossos proximos eventos e reserve seu lugar.
+                <p className="max-w-lg leading-8 text-muted-foreground">
+                  Se quiser compartilhar algo com a nossa comunidade, este espaco esta aberto para sua mensagem.
                 </p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                {eventsWithCount.map((event) => (
-                  <EventCard key={event.id} event={event} />
-                ))}
-              </div>
-              <div className="text-center mt-10">
-                <Button asChild variant="outline" size="lg" className="rounded-full">
-                  <Link href="/eventos">
-                    Ver todos os eventos
-                    <ArrowRight className="size-4" />
-                  </Link>
-                </Button>
+
+              <div className="rounded-[2rem] border border-white/50 bg-white/80 p-6 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.25)] backdrop-blur-sm">
+                <SuggestionForm />
               </div>
             </div>
-          </section>
-        )}
 
-        {/* CTA Section */}
-        <section className="py-16 md:py-20">
-          <div className="container mx-auto px-4">
-            <div className="max-w-2xl mx-auto text-center bg-card rounded-3xl p-8 md:p-12 shadow-lg border border-border">
-              <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground mb-4">
-                Tem uma sugestao de tema?
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                Adorariamos ouvir suas ideias para nossos proximos encontros. 
-                Sua voz e importante para nossa comunidade!
-              </p>
-              <Button asChild size="lg" className="rounded-full">
-                <Link href="/sugestoes">
-                  Enviar Sugestao
-                </Link>
-              </Button>
+            <div className="rounded-[2.4rem] bg-[linear-gradient(135deg,#eadbcc_0%,#f6eee4_48%,#efe4d6_100%)] px-4 py-10 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.18)] md:px-8">
+              <SponsorsCarousel sponsors={sponsors || []} />
             </div>
           </div>
         </section>

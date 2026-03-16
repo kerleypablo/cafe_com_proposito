@@ -1,45 +1,71 @@
 'use client'
 
 import Link from 'next/link'
-import { Coffee, Menu, X, Settings } from 'lucide-react'
+import Image from 'next/image'
+import { ChevronDown, Menu, X, Settings } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isAboutOpen, setIsAboutOpen] = useState(false)
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex items-center justify-center size-10 rounded-full bg-primary">
-              <Coffee className="size-5 text-primary-foreground" />
-            </div>
-            <span className="font-serif text-xl font-semibold text-foreground">
-              Cafe com Proposito
-            </span>
+        <div className="flex h-24 items-center justify-between">
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/icone_sfundo.png"
+              alt="Cafe com Proposito"
+              width={104}
+              height={104}
+              priority
+              className="mt-2 h-14 w-auto -ml-2 sm:-ml-[90px] sm:mt-12 sm:h-55"
+            />
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link 
-              href="/" 
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Inicio
-            </Link>
             <Link 
               href="/eventos" 
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Eventos
             </Link>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsAboutOpen((open) => !open)}
+                className="flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Sobre
+                <ChevronDown className={`size-4 transition-transform ${isAboutOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {isAboutOpen && (
+                <div className="absolute right-0 top-full mt-3 w-60 rounded-2xl border border-border bg-background/95 p-2 shadow-lg backdrop-blur">
+                  <Link
+                    href="/sobre"
+                    className="block rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                    onClick={() => setIsAboutOpen(false)}
+                  >
+                    Sobre Cafe com Proposito
+                  </Link>
+                  <Link
+                    href="/sobre/cibele-barsante"
+                    className="block rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                    onClick={() => setIsAboutOpen(false)}
+                  >
+                    Cibele Barsante
+                  </Link>
+                </div>
+              )}
+            </div>
             <Link 
-              href="/sugestoes" 
+              href="/contato" 
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              Sugestoes
+              Contato
             </Link>
             <Link href="/admin/login">
               <Button variant="outline" size="sm" className="gap-2">
@@ -66,13 +92,6 @@ export function Header() {
           <nav className="md:hidden py-4 border-t border-border">
             <div className="flex flex-col gap-4">
               <Link 
-                href="/" 
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Inicio
-              </Link>
-              <Link 
                 href="/eventos" 
                 className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                 onClick={() => setIsMenuOpen(false)}
@@ -80,11 +99,46 @@ export function Header() {
                 Eventos
               </Link>
               <Link 
-                href="/sugestoes" 
+                href="#"
+                className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                onClick={(event) => {
+                  event.preventDefault()
+                  setIsAboutOpen((open) => !open)
+                }}
+              >
+                Sobre
+                <ChevronDown className={`size-4 transition-transform ${isAboutOpen ? 'rotate-180' : ''}`} />
+              </Link>
+              {isAboutOpen && (
+                <div className="ml-3 flex flex-col gap-3 border-l border-border pl-4">
+                  <Link
+                    href="/sobre"
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={() => {
+                      setIsAboutOpen(false)
+                      setIsMenuOpen(false)
+                    }}
+                  >
+                    Sobre Cafe com Proposito
+                  </Link>
+                  <Link
+                    href="/sobre/cibele-barsante"
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={() => {
+                      setIsAboutOpen(false)
+                      setIsMenuOpen(false)
+                    }}
+                  >
+                    Cibele Barsante
+                  </Link>
+                </div>
+              )}
+              <Link 
+                href="/contato" 
                 className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Sugestoes
+                Contato
               </Link>
               <Link 
                 href="/admin/login" 

@@ -1,4 +1,5 @@
-import { Coffee, Heart } from 'lucide-react'
+import Image from 'next/image'
+import { Heart, Instagram } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -6,9 +7,13 @@ export function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col items-center gap-4">
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center size-8 rounded-full bg-primary">
-              <Coffee className="size-4 text-primary-foreground" />
-            </div>
+            <Image
+              src="/icone_sfundo.png"
+              alt="Cafe com Proposito"
+              width={40}
+              height={40}
+              className="h-10 w-auto"
+            />
             <span className="font-serif text-lg font-semibold text-foreground">
               Cafe com Proposito
             </span>
@@ -21,6 +26,15 @@ export function Footer() {
             <Heart className="size-4 text-accent fill-accent" />
             <span>para nossa comunidade</span>
           </div>
+          <a
+            href="https://instagram.com/cafecompropositobarssante"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Instagram className="size-4" />
+            <span>@cafecompropositobarssante</span>
+          </a>
         </div>
       </div>
     </footer>

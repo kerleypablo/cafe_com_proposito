@@ -5,7 +5,7 @@ import { SuggestionActions } from '@/components/admin/suggestion-actions'
 import { User, Clock } from 'lucide-react'
 
 export const metadata = {
-  title: 'Sugestoes | Admin Cafe com Proposito',
+  title: 'Mensagens | Admin Cafe com Proposito',
 }
 
 export default async function AdminSugestoesPage() {
@@ -27,9 +27,9 @@ export default async function AdminSugestoesPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-serif text-3xl font-bold text-foreground">Sugestoes</h1>
+        <h1 className="font-serif text-3xl font-bold text-foreground">Mensagens</h1>
         <p className="text-muted-foreground">
-          Veja as sugestoes enviadas pela comunidade
+          Sugestoes, pedidos de oracao e agradecimentos enviados pela comunidade
         </p>
       </div>
 
@@ -98,10 +98,10 @@ export default async function AdminSugestoesPage() {
                 day: 'numeric',
                 month: 'short',
               })
-              const statusLabel = suggestion.status === 'approved' ? 'Aprovada' : 'Arquivada'
-              const statusColor = suggestion.status === 'approved' 
-                ? 'bg-primary/10 text-primary' 
-                : 'bg-muted text-muted-foreground'
+              const statusLabel = suggestion.status === 'archived' ? 'Arquivada' : 'Lida'
+              const statusColor = suggestion.status === 'archived' 
+                ? 'bg-muted text-muted-foreground'
+                : 'bg-primary/10 text-primary'
 
               return (
                 <Card key={suggestion.id}>

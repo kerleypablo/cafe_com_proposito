@@ -32,7 +32,7 @@ export function SuggestionForm() {
       })
 
     if (submitError) {
-      setError('Ocorreu um erro ao enviar sua sugestao. Tente novamente.')
+      setError('Ocorreu um erro ao enviar sua mensagem. Tente novamente.')
       setIsSubmitting(false)
       return
     }
@@ -48,17 +48,17 @@ export function SuggestionForm() {
           <CheckCircle className="size-8 text-primary" />
         </div>
         <h3 className="font-serif text-xl font-semibold text-foreground mb-2">
-          Obrigada pela sua sugestao!
+          Mensagem recebida com carinho!
         </h3>
         <p className="text-muted-foreground mb-6">
-          Sua contribuicao e muito importante para nossa comunidade.
+          Obrigada por compartilhar algo com a nossa comunidade.
         </p>
         <Button 
           variant="outline" 
           onClick={() => setIsSuccess(false)}
           className="rounded-full"
         >
-          Enviar outra sugestao
+          Enviar outra mensagem
         </Button>
       </div>
     )
@@ -68,12 +68,12 @@ export function SuggestionForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="suggestion" className="text-foreground">
-          Sua sugestao *
+          Sua mensagem *
         </Label>
         <Textarea
           id="suggestion"
           name="suggestion"
-          placeholder="Compartilhe sua ideia de tema, atividade ou qualquer sugestao..."
+          placeholder="Deixe sua sugestao, pedido de oracao, agradecimento ou qualquer mensagem..."
           required
           rows={5}
           className="resize-none rounded-xl"
@@ -104,7 +104,7 @@ export function SuggestionForm() {
         disabled={isSubmitting}
         className="w-full rounded-full"
       >
-        {isSubmitting ? 'Enviando...' : 'Enviar Sugestao'}
+        {isSubmitting ? 'Enviando...' : 'Enviar mensagem'}
       </Button>
     </form>
   )

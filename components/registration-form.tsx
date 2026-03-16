@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { CheckCircle } from 'lucide-react'
@@ -12,57 +13,154 @@ interface RegistrationFormProps {
   isFull: boolean
 }
 
+interface ParticipantLookup {
+  id: string
+  name: string
+  email: string
+  phone: string | null
+  birthday?: string | null
+  save_data?: boolean | null
+}
+
+const STORAGE_KEY = 'cafe_com_proposito_participant'
+
+function normalizeEmail(value: string) {
+  return value.trim().toLowerCase()
+}
+
+function normalizePhone(value: string) {
+  const digits = value.replace(/\D/g, '')
+  return digits || ''
+}
+
 export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [birthday, setBirthday] = useState('')
+  const [saveData, setSaveData] = useState(false)
+  const [isLoadingExistingData, setIsLoadingExistingData] = useState(false)
+  const hydratedRef = useRef(false)
+
+  useEffect(() => {
+    if (hydratedRef.current) return
+    hydratedRef.current = true
+
+    const stored = window.localStorage.getItem(STORAGE_KEY)
+    if (!stored) return
+
+    try {
+      const parsed = JSON.parse(stored)
+      setName(parsed.name || '')
+      setEmail(parsed.email || '')
+      setPhone(parsed.phone || '')
+      setBirthday(parsed.birthday || '')
+      setSaveData(Boolean(parsed.saveData))
+    } catch {
+      window.localStorage.removeItem(STORAGE_KEY)
+    }
+  }, [])
+
+  async function prefillParticipant(source: 'email' | 'phone', rawValue: string) {
+    const supabase = createClient()
+    const cleanEmail = normalizeEmail(source === 'email' ? rawValue : email)
+    const cleanPhone = normalizePhone(source === 'phone' ? rawValue : phone)
+
+    if (source === 'email' && !cleanEmail) return
+    if (source === 'phone' && !cleanPhone) return
+
+    setIsLoadingExistingData(true)
+
+    let query = supabase
+      .from('participants')
+      .select('id, name, email, phone, birthday, save_data')
+      .limit(1)
+
+    query =
+      source === 'email'
+        ? query.eq('email', cleanEmail)
+        : query.eq('phone', cleanPhone)
+
+    const { data, error: lookupError } = await query.maybeSingle()
+
+    setIsLoadingExistingData(false)
+
+    if (lookupError || !data) return
+
+    setName(current => current || data.name || '')
+    setEmail(current => current || data.email || '')
+    setPhone(current => current || data.phone || '')
+    setBirthday(current => current || data.birthday || '')
+    setSaveData(Boolean(data.save_data))
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setIsSubmitting(true)
     setError(null)
 
-    const formData = new FormData(e.currentTarget)
-    const name = formData.get('name') as string
-    const email = formData.get('email') as string
-    const phone = formData.get('phone') as string || null
-
     const supabase = createClient()
-
-    // Check if already registered
-    const { data: existing } = await supabase
-      .from('registrations')
-      .select('id')
-      .eq('event_id', eventId)
-      .eq('email', email)
-      .single()
-
-    if (existing) {
-      setError('Este email ja esta inscrito neste evento.')
-      setIsSubmitting(false)
-      return
+    const normalizedEmail = normalizeEmail(email)
+    const normalizedPhone = normalizePhone(phone)
+    const participantPayload = {
+      name: name.trim(),
+      email: normalizedEmail,
+      phone: normalizedPhone || null,
+      birthday: birthday || null,
+      save_data: saveData,
     }
 
-    // Get or create participant
     let participantId: string
+    let existingParticipant: ParticipantLookup | null = null
 
-    const { data: existingParticipant } = await supabase
+    const { data: participantByEmail } = await supabase
       .from('participants')
-      .select('id')
-      .eq('email', email)
-      .single()
+      .select('id, name, email, phone, birthday, save_data')
+      .eq('email', normalizedEmail)
+      .maybeSingle()
+
+    if (participantByEmail) {
+      existingParticipant = participantByEmail
+    } else if (normalizedPhone) {
+      const { data: participantByPhone } = await supabase
+        .from('participants')
+        .select('id, name, email, phone, birthday, save_data')
+        .eq('phone', normalizedPhone)
+        .maybeSingle()
+
+      existingParticipant = participantByPhone || null
+    }
 
     if (existingParticipant) {
+      if (
+        existingParticipant.email &&
+        existingParticipant.email !== normalizedEmail &&
+        normalizedPhone &&
+        existingParticipant.phone === normalizedPhone
+      ) {
+        setError('Esse telefone ja esta vinculado a outro cadastro. Use o email ja cadastrado ou informe outro numero.')
+        setIsSubmitting(false)
+        return
+      }
+
       participantId = existingParticipant.id
-      // Update participant info
-      await supabase
+      const { error: updateParticipantError } = await supabase
         .from('participants')
-        .update({ name, phone })
+        .update(participantPayload)
         .eq('id', participantId)
+
+      if (updateParticipantError) {
+        setError('Nao foi possivel atualizar seus dados. Tente novamente.')
+        setIsSubmitting(false)
+        return
+      }
     } else {
       const { data: newParticipant, error: participantError } = await supabase
         .from('participants')
-        .insert({ name, email, phone })
+        .insert(participantPayload)
         .select('id')
         .single()
 
@@ -74,15 +172,35 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
       participantId = newParticipant.id
     }
 
+    const { data: existingRegistration } = await supabase
+      .from('registrations')
+      .select('id')
+      .eq('event_id', eventId)
+      .eq('participant_id', participantId)
+      .maybeSingle()
+
+    const { data: existingRegistrationByEmail } = await supabase
+      .from('registrations')
+      .select('id')
+      .eq('event_id', eventId)
+      .eq('email', normalizedEmail)
+      .maybeSingle()
+
+    if (existingRegistration || existingRegistrationByEmail) {
+      setError('Voce ja esta inscrita neste evento com esse cadastro.')
+      setIsSubmitting(false)
+      return
+    }
+
     // Create registration
     const { error: registrationError } = await supabase
       .from('registrations')
       .insert({
         event_id: eventId,
         participant_id: participantId,
-        name,
-        email,
-        phone,
+        name: participantPayload.name,
+        email: participantPayload.email,
+        phone: participantPayload.phone,
         status: isFull ? 'waitlist' : 'confirmed',
       })
 
@@ -90,6 +208,21 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
       setError('Erro ao processar inscricao. Tente novamente.')
       setIsSubmitting(false)
       return
+    }
+
+    if (saveData) {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          name: participantPayload.name,
+          email: participantPayload.email,
+          phone: participantPayload.phone || '',
+          birthday: participantPayload.birthday || '',
+          saveData,
+        }),
+      )
+    } else {
+      window.localStorage.removeItem(STORAGE_KEY)
     }
 
     setIsSuccess(true)
@@ -125,6 +258,8 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
           name="name"
           placeholder="Seu nome"
           required
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           className="rounded-xl"
         />
       </div>
@@ -139,6 +274,9 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
           type="email"
           placeholder="seu@email.com"
           required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onBlur={() => void prefillParticipant('email', email)}
           className="rounded-xl"
         />
       </div>
@@ -152,9 +290,53 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
           name="phone"
           type="tel"
           placeholder="(00) 00000-0000"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          onBlur={() => void prefillParticipant('phone', phone)}
           className="rounded-xl"
         />
       </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="birthday" className="text-foreground">
+          Data de aniversario (opcional)
+        </Label>
+        <Input
+          id="birthday"
+          name="birthday"
+          type="date"
+          value={birthday}
+          onChange={(e) => setBirthday(e.target.value)}
+          className="rounded-xl"
+        />
+        <p className="text-xs text-muted-foreground">
+          Se voce quiser, podemos usar essa informacao para mensagens especiais como aniversario.
+        </p>
+      </div>
+
+      <div className="space-y-3 rounded-2xl border border-border bg-secondary/20 p-4">
+        <div className="flex items-start gap-3">
+          <Checkbox
+            id="save_data"
+            checked={saveData}
+            onCheckedChange={(checked) => setSaveData(checked === true)}
+          />
+          <div className="space-y-1">
+            <Label htmlFor="save_data" className="text-foreground">
+              Salvar meus dados para proximas inscricoes
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              Assim voce nao precisa preencher tudo de novo quando participar de outros encontros.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {isLoadingExistingData && (
+        <p className="text-xs text-muted-foreground">
+          Verificando se ja existe um cadastro com esses dados...
+        </p>
+      )}
 
       {error && (
         <p className="text-sm text-destructive">{error}</p>

@@ -1,10 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import { EventForm } from '@/components/admin/event-form'
-import { ArrowLeft, Users } from 'lucide-react'
+import { ArrowLeft, Users, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
+import { EVENT_SELECT, normalizeEvent } from '@/lib/events'
+import { buildWhatsappLink } from '@/lib/whatsapp'
 
 interface EditEventPageProps {
   params: Promise<{ id: string }>
@@ -33,15 +35,17 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
     redirect('/admin/login')
   }
   
-  const { data: event } = await supabase
+  const { data: rawEvent } = await supabase
     .from('events')
-    .select('*')
+    .select(EVENT_SELECT)
     .eq('id', id)
     .single()
 
-  if (!event) {
+  if (!rawEvent) {
     notFound()
   }
+
+  const event = normalizeEvent(rawEvent)
 
   // Get registrations for this event
   const { data: registrations } = await supabase
@@ -94,6 +98,7 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
                       : registration.status === 'waitlist'
                         ? 'Lista de espera'
                         : 'Cancelado'
+                    const whatsappLink = buildWhatsappLink(registration.phone)
 
                     return (
                       <div 
@@ -114,9 +119,22 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
                               </p>
                             )}
                           </div>
-                          <span className={`text-xs px-2 py-1 rounded-full shrink-0 ${statusColor}`}>
-                            {statusLabel}
-                          </span>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {whatsappLink && (
+                              <Link
+                                href={whatsappLink}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex size-9 items-center justify-center rounded-full bg-[#25D366]/10 text-[#25D366] transition-colors hover:bg-[#25D366]/20"
+                                aria-label={`Conversar com ${registration.name} no WhatsApp`}
+                              >
+                                <MessageCircle className="size-4" />
+                              </Link>
+                            )}
+                            <span className={`text-xs px-2 py-1 rounded-full shrink-0 ${statusColor}`}>
+                              {statusLabel}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     )
