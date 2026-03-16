@@ -13,7 +13,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
       <div className="container mx-auto px-4">
-        <div className="flex h-24 items-center justify-between">
+        <div className="flex h-20 items-center justify-between sm:h-24">
           <Link href="/" className="flex items-center">
             <Image
               src="/icone_sfundo.png"
@@ -21,7 +21,7 @@ export function Header() {
               width={104}
               height={104}
               priority
-              className="mt-2 h-14 w-auto -ml-2 sm:-ml-[90px] sm:mt-12 sm:h-55"
+              className="h-14 w-auto sm:h-16"
             />
           </Link>
 

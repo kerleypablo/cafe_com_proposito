@@ -21,7 +21,7 @@ export default function ContatoPage() {
           <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div className="overflow-hidden rounded-[2.2rem] shadow-[0_30px_80px_-44px_rgba(0,0,0,0.38)]">
               <img
-                src="/placeholder-user.jpg"
+                src="/background.png"
                 alt="Contato Cafe com Proposito"
                 className="h-full min-h-[28rem] w-full object-cover"
               />

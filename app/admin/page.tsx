@@ -112,21 +112,74 @@ export default async function AdminDashboardPage() {
         <p className="text-muted-foreground">Visao geral do Cafe com Proposito</p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      <Card className="overflow-hidden border-primary/20 bg-[linear-gradient(135deg,#f8efe6_0%,#fffaf5_60%,#f3e6d7_100%)]">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 font-serif text-xl">
+            <Cake className="size-5 text-primary" />
+            Aniversariantes do Mes
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {birthdayPeople.length > 0 ? (
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {birthdayPeople.map((participant) => {
+                const birthdayDate = new Date(`${participant.birthday}T00:00:00`)
+                const formattedBirthday = birthdayDate.toLocaleDateString('pt-BR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                })
+                const whatsappLink = buildWhatsappLink(participant.phone)
+
+                return (
+                  <div
+                    key={participant.id}
+                    className="flex items-center justify-between rounded-2xl border border-white/60 bg-white/80 p-4 shadow-[0_16px_40px_-28px_rgba(0,0,0,0.25)]"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-foreground">{participant.name}</p>
+                      <p className="text-sm text-muted-foreground">{formattedBirthday}</p>
+                    </div>
+                    {whatsappLink ? (
+                      <Link
+                        href={whatsappLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="ml-3 inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-[#25D366]/10 text-[#25D366] transition-colors hover:bg-[#25D366]/20"
+                        aria-label={`Conversar com ${participant.name} no WhatsApp`}
+                      >
+                        <MessageCircle className="size-4" />
+                      </Link>
+                    ) : (
+                      <span className="ml-3 shrink-0 text-xs text-muted-foreground">Sem WhatsApp</span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <p className="py-2 text-center text-muted-foreground">
+              Nenhum aniversariante cadastrado neste mes
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5 lg:gap-4">
         {stats.map((stat) => {
           const Icon = stat.icon
           return (
             <Link key={stat.label} href={stat.href}>
-              <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center justify-center size-12 rounded-full bg-primary/10">
-                      <Icon className="size-6 text-primary" />
+              <Card className="h-full cursor-pointer transition-shadow hover:shadow-md">
+                <CardContent className="p-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <div className="flex size-11 items-center justify-center rounded-2xl bg-primary/10">
+                      <Icon className="size-5 text-primary" />
                     </div>
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                      <p className="text-sm text-muted-foreground">{stat.label}</p>
+                    <div className="min-w-0">
+                      <p className="text-2xl font-bold leading-none text-foreground">{stat.value}</p>
+                      <p className="mt-1 text-xs leading-5 text-muted-foreground sm:text-sm">
+                        {stat.label}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -136,7 +189,7 @@ export default async function AdminDashboardPage() {
         })}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         {/* Upcoming Events */}
         <Card>
           <CardHeader>
@@ -212,58 +265,6 @@ export default async function AdminDashboardPage() {
             ) : (
               <p className="text-muted-foreground text-center py-4">
                 Nenhuma inscricao recente
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-serif flex items-center gap-2">
-              <Cake className="size-5" />
-              Aniversariantes do Mes
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {birthdayPeople.length > 0 ? (
-              <div className="space-y-3">
-                {birthdayPeople.map((participant) => {
-                  const birthdayDate = new Date(`${participant.birthday}T00:00:00`)
-                  const formattedBirthday = birthdayDate.toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                  })
-                  const whatsappLink = buildWhatsappLink(participant.phone)
-
-                  return (
-                    <div
-                      key={participant.id}
-                      className="flex items-center justify-between rounded-xl bg-secondary/50 p-3"
-                    >
-                      <div>
-                        <p className="font-medium text-foreground">{participant.name}</p>
-                        <p className="text-sm text-muted-foreground">{formattedBirthday}</p>
-                      </div>
-                      {whatsappLink ? (
-                        <Link
-                          href={whatsappLink}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex size-9 items-center justify-center rounded-full bg-[#25D366]/10 text-[#25D366] transition-colors hover:bg-[#25D366]/20"
-                          aria-label={`Conversar com ${participant.name} no WhatsApp`}
-                        >
-                          <MessageCircle className="size-4" />
-                        </Link>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">Sem WhatsApp</span>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            ) : (
-              <p className="text-muted-foreground text-center py-4">
-                Nenhum aniversariante cadastrado neste mes
               </p>
             )}
           </CardContent>

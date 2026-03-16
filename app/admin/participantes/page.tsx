@@ -1,33 +1,63 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
-import { Mail, Phone, Calendar, Cake, BadgeCheck, MessageCircle } from 'lucide-react'
+import { Cake, ChevronRight, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { buildWhatsappLink } from '@/lib/whatsapp'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 export const metadata = {
   title: 'Participantes | Admin Cafe com Proposito',
 }
 
-export default async function AdminParticipantesPage() {
+export default async function AdminParticipantesPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ nome?: string; evento?: string }>
+}) {
   const supabase = await createClient()
+  const params = (await searchParams) || {}
+  const nameFilter = params.nome?.trim() || ''
+  const eventFilter = params.evento?.trim() || ''
   
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
     redirect('/admin/login')
   }
   
-  const { data: participants } = await supabase
+  const { data: eventOptions } = await supabase
+    .from('events')
+    .select('id, title, date')
+    .order('date', { ascending: false })
+
+  let query = supabase
     .from('participants')
     .select(`
       *,
       registrations:registrations(
         id,
+        event_id,
         status,
         events:event_id(title, date)
       )
     `)
     .order('created_at', { ascending: false })
+
+  if (nameFilter) {
+    query = query.ilike('name', `%${nameFilter}%`)
+  }
+
+  const { data: participants } = await query
+  const today = new Date().toISOString().split('T')[0]
+  const filteredParticipants = (participants || []).filter((participant) => {
+    if (!eventFilter) return true
+
+    return participant.registrations?.some(
+      (registration: { event_id: string; status: string }) =>
+        registration.event_id === eventFilter && registration.status === 'confirmed'
+    )
+  })
 
   return (
     <div className="space-y-6">
@@ -38,97 +68,122 @@ export default async function AdminParticipantesPage() {
         </p>
       </div>
 
-      {participants && participants.length > 0 ? (
-        <div className="grid gap-4">
-          {participants.map((participant) => {
-            const confirmedEvents = participant.registrations?.filter(
-              (r: { status: string }) => r.status === 'confirmed'
-            ).length || 0
+      <Card>
+        <CardContent className="p-4">
+          <form className="flex flex-col gap-3 sm:flex-row">
+            <Input
+              type="text"
+              name="nome"
+              placeholder="Filtrar por nome"
+              defaultValue={nameFilter}
+              className="h-10"
+            />
+            <select
+              name="evento"
+              defaultValue={eventFilter}
+              className="h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground"
+            >
+              <option value="">Filtrar por evento</option>
+              {(eventOptions || []).map((event) => (
+                <option key={event.id} value={event.id}>
+                  {event.title}
+                </option>
+              ))}
+            </select>
+            <div className="flex gap-2">
+              <Button type="submit" className="rounded-full">
+                Filtrar
+              </Button>
+              {(nameFilter || eventFilter) && (
+                <Button asChild type="button" variant="outline" className="rounded-full">
+                  <Link href="/admin/participantes">Limpar</Link>
+                </Button>
+              )}
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      {filteredParticipants.length > 0 ? (
+        <div className="grid gap-3">
+          {filteredParticipants.map((participant) => {
             const whatsappLink = buildWhatsappLink(participant.phone)
+            const activeRegistrations = participant.registrations?.filter(
+              (registration: {
+                status: string
+                events: { title: string; date: string } | null
+              }) => registration.status === 'confirmed' && registration.events?.date >= today
+            ) || []
 
             return (
               <Card key={participant.id}>
-                <CardContent className="p-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                    {/* Participant Info */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-foreground truncate">
-                        {participant.name}
-                      </h3>
-                      
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Mail className="size-4" />
-                          <span className="truncate">{participant.email}</span>
-                        </div>
-                        {participant.phone && (
-                          <div className="flex items-center gap-1">
-                            <Phone className="size-4" />
-                            <span>{participant.phone}</span>
-                          </div>
-                        )}
-                        {participant.birthday && (
-                          <div className="flex items-center gap-1">
-                            <Cake className="size-4" />
-                            <span>
-                              {new Date(`${participant.birthday}T00:00:00`).toLocaleDateString('pt-BR', {
-                                day: '2-digit',
-                                month: '2-digit',
-                              })}
-                            </span>
-                          </div>
-                        )}
-                        <div className="flex items-center gap-1">
-                          <Calendar className="size-4" />
-                          <span>{confirmedEvents} eventos confirmados</span>
-                        </div>
-                      </div>
-
-                      {participant.save_data && (
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs text-primary">
-                            <BadgeCheck className="size-3" />
-                            Dados salvos
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Event Tags */}
-                    <div className="flex items-center gap-3">
-                      {whatsappLink && (
-                        <Link
-                          href={whatsappLink}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex size-10 items-center justify-center rounded-full bg-[#25D366]/10 text-[#25D366] transition-colors hover:bg-[#25D366]/20"
-                          aria-label={`Conversar com ${participant.name} no WhatsApp`}
-                        >
-                          <MessageCircle className="size-5" />
-                        </Link>
-                      )}
-
-                    {participant.registrations && participant.registrations.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {participant.registrations.slice(0, 3).map((reg: { 
-                          id: string
-                          status: string
-                          events: { title: string; date: string } | null 
-                        }) => (
-                          <span 
-                            key={reg.id}
-                            className="text-xs px-2 py-1 rounded-full bg-secondary text-secondary-foreground"
+                <CardContent className="p-3 sm:p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="min-w-0 flex-1 space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <Link
+                            href={`/admin/participantes/${participant.id}`}
+                            className="block truncate font-semibold text-foreground transition-colors hover:text-primary"
                           >
-                            {reg.events?.title}
-                          </span>
-                        ))}
-                        {participant.registrations.length > 3 && (
-                          <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">
-                            +{participant.registrations.length - 3}
+                            {participant.name}
+                          </Link>
+                          {participant.birthday && (
+                            <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
+                              <Cake className="size-4 shrink-0" />
+                              <span>
+                                {new Date(`${participant.birthday}T00:00:00`).toLocaleDateString('pt-BR', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                })}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          {whatsappLink && (
+                            <Link
+                              href={whatsappLink}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[#25D366]/10 text-[#25D366] transition-colors hover:bg-[#25D366]/20"
+                              aria-label={`Conversar com ${participant.name} no WhatsApp`}
+                            >
+                              <MessageCircle className="size-4" />
+                            </Link>
+                          )}
+                          <Link
+                            href={`/admin/participantes/${participant.id}`}
+                            className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-colors hover:bg-secondary/80"
+                            aria-label={`Ver detalhes de ${participant.name}`}
+                          >
+                            <ChevronRight className="size-4" />
+                          </Link>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        {activeRegistrations.length > 0 ? (
+                          activeRegistrations.slice(0, 3).map((reg: {
+                            id: string
+                            status: string
+                            event_id: string
+                            events: { title: string; date: string } | null
+                          }) => (
+                            <span
+                              key={reg.id}
+                              className="rounded-full bg-secondary px-2 py-1 text-[11px] text-secondary-foreground"
+                            >
+                              {reg.events?.title}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="rounded-full bg-muted px-2 py-1 text-[11px] text-muted-foreground">
+                            Sem evento futuro
                           </span>
                         )}
                       </div>
-                    )}
                     </div>
                   </div>
                 </CardContent>
@@ -140,7 +195,9 @@ export default async function AdminParticipantesPage() {
         <Card>
           <CardContent className="py-12 text-center">
             <p className="text-muted-foreground">
-              Nenhum participante cadastrado ainda.
+              {nameFilter || eventFilter
+                ? 'Nenhum participante encontrado com esses filtros.'
+                : 'Nenhum participante cadastrado ainda.'}
             </p>
           </CardContent>
         </Card>

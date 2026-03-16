@@ -5,23 +5,36 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Plus, Edit } from 'lucide-react'
 import { SponsorVisibilityToggle } from '@/components/admin/sponsor-visibility-toggle'
+import { SponsorSearchInput } from '@/components/admin/sponsor-search-input'
 
 export const metadata = {
   title: 'Patrocinadores | Admin Cafe com Proposito',
 }
 
-export default async function AdminPatrocinadoresPage() {
+export default async function AdminPatrocinadoresPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ nome?: string }>
+}) {
   const supabase = await createClient()
+  const params = (await searchParams) || {}
+  const nameFilter = params.nome?.trim() || ''
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
     redirect('/admin/login')
   }
 
-  const { data: sponsors } = await supabase
+  let query = supabase
     .from('sponsors')
     .select('*')
     .order('created_at', { ascending: false })
+
+  if (nameFilter) {
+    query = query.ilike('title', `%${nameFilter}%`)
+  }
+
+  const { data: sponsors } = await query
 
   return (
     <div className="space-y-6">
@@ -39,6 +52,12 @@ export default async function AdminPatrocinadoresPage() {
           </Link>
         </Button>
       </div>
+
+      <Card>
+        <CardContent className="p-4">
+          <SponsorSearchInput defaultValue={nameFilter} />
+        </CardContent>
+      </Card>
 
       {sponsors && sponsors.length > 0 ? (
         <div className="grid gap-4">
@@ -78,7 +97,9 @@ export default async function AdminPatrocinadoresPage() {
       ) : (
         <Card>
           <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">Nenhum patrocinador cadastrado ainda.</p>
+            <p className="text-muted-foreground">
+              {nameFilter ? 'Nenhum patrocinador encontrado para esse nome.' : 'Nenhum patrocinador cadastrado ainda.'}
+            </p>
           </CardContent>
         </Card>
       )}
