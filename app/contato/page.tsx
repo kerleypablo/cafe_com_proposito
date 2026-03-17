@@ -70,7 +70,7 @@ export default function ContatoPage() {
                     </div>
                     <div>
                       <p className="text-sm uppercase tracking-[0.22em] text-primary/70">WhatsApp</p>
-                      <p className="font-medium text-foreground">(00) 00000-0000</p>
+                      <p className="font-medium text-foreground">Falar pelo WhatsApp</p>
                     </div>
                   </div>
                   <span className="text-sm text-muted-foreground">Abrir</span>

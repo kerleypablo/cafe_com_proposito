@@ -18,33 +18,34 @@ export default function CibeleBarsantePage() {
               <div className="space-y-4">
                 <p className="text-sm uppercase tracking-[0.4em] text-white/70">Cibele Barsante</p>
                 <h1 className="max-w-3xl font-serif text-4xl leading-tight md:text-6xl">
-                  O Café com Propósito é mais que um evento.
-                  <span className="block text-[#e8c9b0]">É um movimento de cura, acolhimento e fé.</span>
+                  Quem é Sibeli?
+                  <span className="block text-[#e8c9b0]">Uma mulher movida pela fé e guiada por Deus.</span>
                 </h1>
                 <p className="max-w-2xl text-lg leading-8 text-white/78">
-                  Permita-se viver essa experiencia. Uma caminhada que nasce do cuidado,
-                  da escuta e da coragem de reunir mulheres para viverem um dia de cada vez,
-                  com profundidade, direcao e esperanca.
+                  Sibeli é uma mulher movida pela fé, guiada por Deus e apaixonada por
+                  transformar vidas através de conexões verdadeiras. Ela carrega no coração
+                  o desejo de ver pessoas restauradas, confiantes e alinhadas com o propósito
+                  que o Senhor tem para cada uma.
                 </p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="rounded-[1.8rem] border border-white/12 bg-white/8 p-5 backdrop-blur">
-                  <p className="text-xs uppercase tracking-[0.28em] text-white/60">Acolhimento</p>
+                  <p className="text-xs uppercase tracking-[0.28em] text-white/60">Fé</p>
                   <p className="mt-3 text-sm leading-7 text-white/82">
-                    Um ambiente seguro, feminino e intencional para compartilhar a vida real.
+                    Uma vida guiada por Deus, sustentada pela presença e pela confiança nEle.
                   </p>
                 </div>
                 <div className="rounded-[1.8rem] border border-white/12 bg-white/8 p-5 backdrop-blur">
-                  <p className="text-xs uppercase tracking-[0.28em] text-white/60">Fe</p>
+                  <p className="text-xs uppercase tracking-[0.28em] text-white/60">Propósito</p>
                   <p className="mt-3 text-sm leading-7 text-white/82">
-                    Confianca em Deus como fonte de direcao, cura e sustento em cada fase.
+                    O desejo de ver vidas restauradas e alinhadas com o chamado do Senhor.
                   </p>
                 </div>
                 <div className="rounded-[1.8rem] border border-white/12 bg-white/8 p-5 backdrop-blur">
-                  <p className="text-xs uppercase tracking-[0.28em] text-white/60">Crescimento</p>
+                  <p className="text-xs uppercase tracking-[0.28em] text-white/60">Conexões</p>
                   <p className="mt-3 text-sm leading-7 text-white/82">
-                    Encorajamento para que mulheres avancem em seus objetivos com maturidade e verdade.
+                    Relações verdadeiras que fortalecem, acolhem e transformam.
                   </p>
                 </div>
               </div>
@@ -74,31 +75,30 @@ export default function CibeleBarsantePage() {
             </div>
 
             <div className="space-y-6">
-              <p className="text-sm uppercase tracking-[0.4em] text-primary/70">Visao</p>
+              <p className="text-sm uppercase tracking-[0.4em] text-primary/70">Essência</p>
               <h2 className="font-serif text-3xl leading-tight text-foreground md:text-5xl">
-                Proporcionar para mulheres um ambiente de acolhimento, fé e crescimento espiritual.
+                Mais do que palavras, Sibeli vive aquilo que acredita.
               </h2>
               <p className="text-lg leading-8 text-muted-foreground">
-                Encorajar mulheres a alcançarem os objetivos de suas vidas e tornar cada encontro
-                uma referência pelo seu impacto emocional e espiritual.
+                Processos, entrega, crescimento e dependência de Deus fazem parte da sua
+                caminhada e da forma como ela conduz sua vida.
               </p>
               <p className="leading-8 text-foreground/80">
-                A mensagem que conduz esse movimento é simples, mas firme: nós mulheres podemos
-                chegar no topo vivendo um dia de cada vez, respeitando nossas fases, nossas
-                estações e o processo que Deus construiu para cada história.
+                Sua vida é um testemunho de que, mesmo quando tudo parece incerto, é na
+                presença que encontramos direção, força e recomeço.
               </p>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-[1.8rem] border border-border/70 bg-white/70 p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,0.25)]">
-                  <p className="text-xs uppercase tracking-[0.28em] text-primary/70">Impacto</p>
+                  <p className="text-xs uppercase tracking-[0.28em] text-primary/70">Direção</p>
                   <p className="mt-3 text-sm leading-7 text-foreground/80">
-                    Um encontro pensado para tocar a emoção, fortalecer a fé e abrir novos caminhos.
+                    Na presença de Deus, até os caminhos incertos encontram sentido.
                   </p>
                 </div>
                 <div className="rounded-[1.8rem] border border-border/70 bg-white/70 p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,0.25)]">
-                  <p className="text-xs uppercase tracking-[0.28em] text-primary/70">Direção</p>
+                  <p className="text-xs uppercase tracking-[0.28em] text-primary/70">Recomeço</p>
                   <p className="mt-3 text-sm leading-7 text-foreground/80">
-                    Uma jornada onde propósito e constância caminham juntos, sem pressa e sem comparação.
+                    Quando Deus conduz, sempre existe força para continuar e começar de novo.
                   </p>
                 </div>
               </div>
@@ -109,22 +109,22 @@ export default function CibeleBarsantePage() {
         <section className="px-4 pb-14 md:px-8 md:pb-20">
           <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <div className="space-y-6 rounded-[2.4rem] border border-border/60 bg-white p-8 shadow-[0_30px_90px_-50px_rgba(0,0,0,0.28)] md:p-10">
-              <p className="text-sm uppercase tracking-[0.4em] text-primary/70">Gratidao</p>
+              <p className="text-sm uppercase tracking-[0.4em] text-primary/70">Convicção</p>
               <h2 className="font-serif text-3xl leading-tight text-foreground md:text-4xl">
-                Hoje meu coracao e so gratidao a Deus.
+                Uma história marcada pela presença de Deus.
               </h2>
               <p className="leading-8 text-foreground/80">
-                Gratidão por tudo que Ele tem feito, por cada porta aberta, por cada mulher que
-                chegou e por cada história que tem sido tocada através do Café com Propósito.
+                Sibeli carrega no coração a certeza de que vidas podem ser restauradas,
+                fortalecidas e reposicionadas quando encontram direção no Senhor.
               </p>
               <p className="leading-8 text-foreground/80">
-                O que começou como um pequeno desejo no meu coração se tornou algo muito maior
-                do que eu imaginei. E eu sei que tudo isso vem das mãos de Deus.
+                É essa verdade que sustenta sua jornada e inspira cada passo, cada encontro
+                e cada conexão construída com propósito.
               </p>
               <div className="rounded-[1.8rem] bg-[#2a1e1a] px-6 py-7 text-white shadow-[0_24px_70px_-40px_rgba(0,0,0,0.55)]">
                 <p className="text-lg leading-8 text-white/88">
-                  Que Ele continue abençoando cada encontro, cada vida e cada propósito que nasce aqui.
-                  Toda honra e toda glória sejam dadas a Ele.
+                  Mesmo quando tudo parece incerto, é na presença que encontramos direção,
+                  força e recomeço.
                 </p>
               </div>
             </div>
@@ -132,7 +132,7 @@ export default function CibeleBarsantePage() {
             <div className="overflow-hidden rounded-[2.4rem] bg-[#ddd0c3] shadow-[0_30px_90px_-48px_rgba(0,0,0,0.4)]">
               <img
                 src="/foto 3.jpeg"
-                alt="Cibele Barsante convidando mulheres para viverem essa experiencia"
+                alt="Cibele Barsante convidando mulheres para viverem essa experiência"
                 className="h-full min-h-[32rem] w-full object-cover object-top"
               />
             </div>

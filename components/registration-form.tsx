@@ -239,9 +239,9 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
           {isFull ? 'Você está na lista de espera!' : 'Inscrição confirmada!'}
         </h3>
         <p className="text-sm text-muted-foreground">
-          {isFull 
+          {isFull
             ? 'Entraremos em contato se uma vaga for liberada.'
-            : 'Nos vemos no encontro! Você receberá mais informações por email.'}
+            : 'Inscrição realizada com sucesso!'}
         </p>
       </div>
     )

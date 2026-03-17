@@ -29,7 +29,7 @@ export function EventCard({ event }: EventCardProps) {
     month: 'long',
   })
   
-  const spotsLeft = event.max_participants 
+  const spotsLeft = event.max_participants
     ? event.max_participants - (event.registration_count || 0)
     : null
 
@@ -78,9 +78,9 @@ export function EventCard({ event }: EventCardProps) {
             <div className={`flex items-center gap-2 text-sm ${isPast ? 'text-muted-foreground/80' : 'text-muted-foreground'}`}>
               <Users className="size-4 text-primary" />
               <span>
-                {isFull 
-                  ? 'Vagas esgotadas' 
-                  : `${spotsLeft} vagas restantes`}
+                {isFull
+                  ? 'Vagas esgotadas'
+                  : 'Vagas limitadas'}
               </span>
             </div>
           )}

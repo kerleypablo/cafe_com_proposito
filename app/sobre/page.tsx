@@ -26,45 +26,62 @@ export default function SobrePage() {
               <div className="space-y-6">
                 <p className="text-sm uppercase tracking-[0.4em] text-primary/70">Sobre</p>
                 <h1 className="font-serif text-4xl text-foreground md:text-5xl">
-                  Um encontro pensado para acolher, fortalecer e inspirar mulheres.
+                  O que é o Café com Propósito?
                 </h1>
                 <p className="text-lg leading-8 text-muted-foreground">
-                  O Café com Propósito nasceu do desejo de criar um espaço de encontro,
-                  acolhimento e crescimento entre mulheres. Um momento simples, como um café
-                  compartilhado, pode se transformar em algo muito maior quando existe
-                  propósito por trás dele.
+                  O Café com Propósito nasceu de algo simples, mas poderoso: encontros.
+                  Começou dentro de casa, com mulheres da família, e se tornou um movimento
+                  de fé, conexão e transformação.
                 </p>
                 <p className="leading-8 text-foreground/80">
-                  Em cada encontro, mulheres se reúnem para conversar sobre a vida real:
-                  desafios, emoções, fé, escolhas e caminhos. São momentos de reflexão,
-                  aprendizado e troca de experiências, onde cada história tem valor e cada
-                  voz é importante.
+                  É um espaço onde vidas são tocadas, corações são fortalecidos e a confiança
+                  é restaurada, não apenas nas pessoas, mas principalmente em Deus.
                 </p>
               </div>
             </div>
 
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <div className="space-y-6 order-2 lg:order-1">
-                <p className="text-sm uppercase tracking-[0.4em] text-primary/70">Nossa essência</p>
+                <p className="text-sm uppercase tracking-[0.4em] text-primary/70">Propósito</p>
                 <h2 className="font-serif text-3xl text-foreground md:text-4xl">
-                  Uma comunidade que cresce a cada reunião.
+                  Um movimento de fé, conexão e transformação.
                 </h2>
-                <p className="leading-8 text-foreground/80">
-                  O projeto busca fortalecer mulheres em sua caminhada pessoal e espiritual,
-                  incentivando o autoconhecimento, o cuidado emocional e a confiança em Deus
-                  como fonte de direção e esperança.
-                </p>
-                <p className="leading-8 text-foreground/80">
-                  Mais do que palestras ou encontros mensais, o Café com Propósito é uma
-                  comunidade que cresce a cada reunião. Um ambiente seguro onde é possível
-                  compartilhar, ouvir, aprender e encontrar apoio.
-                </p>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="rounded-[1.8rem] border border-border/70 bg-card p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,0.25)]">
+                    <p className="text-xs uppercase tracking-[0.28em] text-primary/70">Objetivo</p>
+                    <p className="mt-3 text-sm leading-7 text-foreground/80">
+                      Despertar pessoas para viverem com propósito, fortalecendo sua fé e
+                      restaurando sua confiança em Deus e em si mesmas.
+                    </p>
+                  </div>
+                  <div className="rounded-[1.8rem] border border-border/70 bg-card p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,0.25)]">
+                    <p className="text-xs uppercase tracking-[0.28em] text-primary/70">Missão</p>
+                    <p className="mt-3 text-sm leading-7 text-foreground/80">
+                      Levar transformação através de encontros intencionais, criando ambientes
+                      de acolhimento, profundidade e presença, onde cada pessoa possa
+                      experimentar o amor de Deus de forma real.
+                    </p>
+                  </div>
+                  <div className="rounded-[1.8rem] border border-border/70 bg-card p-5 shadow-[0_22px_60px_-42px_rgba(0,0,0,0.25)]">
+                    <p className="text-xs uppercase tracking-[0.28em] text-primary/70">Visão</p>
+                    <p className="mt-3 text-sm leading-7 text-foreground/80">
+                      Ser um movimento que impacta vidas além de um ambiente físico,
+                      alcançando corações, formando pessoas firmes na fé e conscientes do
+                      seu propósito, gerando transformação que se multiplica.
+                    </p>
+                  </div>
+                </div>
                 <div className="rounded-[2rem] border border-border/70 bg-card p-6 shadow-[0_24px_70px_-45px_rgba(0,0,0,0.28)]">
-                  <p className="text-lg leading-8 text-muted-foreground">
-                    Aqui acreditamos que pequenas conversas podem gerar grandes
-                    transformações. Porque às vezes tudo o que precisamos é de um momento
-                    de pausa, um café e um propósito.
-                  </p>
+                  <p className="text-sm uppercase tracking-[0.28em] text-primary/70">Valores</p>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <p className="text-sm leading-7 text-muted-foreground">Fé acima de tudo</p>
+                    <p className="text-sm leading-7 text-muted-foreground">Presença e intimidade com Deus</p>
+                    <p className="text-sm leading-7 text-muted-foreground">Conexões verdadeiras</p>
+                    <p className="text-sm leading-7 text-muted-foreground">Acolhimento sem julgamentos</p>
+                    <p className="text-sm leading-7 text-muted-foreground">Processo e transformação</p>
+                    <p className="text-sm leading-7 text-muted-foreground">Amor, cuidado e propósito</p>
+                    <p className="text-sm leading-7 text-muted-foreground">Confiança restaurada</p>
+                  </div>
                 </div>
               </div>
 
