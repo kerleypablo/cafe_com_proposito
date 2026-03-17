@@ -1,6 +1,6 @@
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
-import { Instagram, Mail, MessageCircle } from 'lucide-react'
+import { Instagram, Mail } from 'lucide-react'
 
 export const metadata = {
   title: 'Contato | Café com Propósito',
@@ -8,8 +8,7 @@ export const metadata = {
 }
 
 const instagramUrl = 'https://instagram.com/cafecompropositobarssante'
-const whatsappUrl = 'https://wa.me/5500000000000'
-const emailAddress = 'contato@cafecomproposito.com'
+const emailAddress = 'cbarssante@gmail.com'
 
 export default function ContatoPage() {
   return (
@@ -33,10 +32,6 @@ export default function ContatoPage() {
                 <h1 className="font-serif text-4xl text-foreground md:text-5xl">
                   Fale com o Café com Propósito
                 </h1>
-                <p className="text-lg leading-8 text-muted-foreground">
-                  Este espaço já está pronto para receber sua foto e os contatos oficiais.
-                  Quando você me mandar o WhatsApp e o email corretos, eu troco aqui.
-                </p>
               </div>
 
               <div className="grid gap-4">
@@ -53,24 +48,6 @@ export default function ContatoPage() {
                     <div>
                       <p className="text-sm uppercase tracking-[0.22em] text-primary/70">Instagram</p>
                       <p className="font-medium text-foreground">@cafecompropositobarssante</p>
-                    </div>
-                  </div>
-                  <span className="text-sm text-muted-foreground">Abrir</span>
-                </a>
-
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center justify-between rounded-[1.6rem] border border-border/70 bg-card px-5 py-4 shadow-[0_24px_70px_-45px_rgba(0,0,0,0.28)] transition-transform hover:-translate-y-0.5"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                      <MessageCircle className="size-5" />
-                    </div>
-                    <div>
-                      <p className="text-sm uppercase tracking-[0.22em] text-primary/70">WhatsApp</p>
-                      <p className="font-medium text-foreground">Falar pelo WhatsApp</p>
                     </div>
                   </div>
                   <span className="text-sm text-muted-foreground">Abrir</span>
