@@ -21,13 +21,18 @@ export function Header() {
               width={104}
               height={104}
               priority
-              className="h-14 w-auto sm:h-55"
-              style={{ marginLeft: '-30px' }}
+              className="h-14 w-auto sm:h-55 sm:-ml-[30px]"
             />
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
+            <Link
+              href="/"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Home
+            </Link>
             <Link 
               href="/eventos" 
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -92,6 +97,13 @@ export function Header() {
         {isMenuOpen && (
           <nav className="md:hidden py-4 border-t border-border">
             <div className="flex flex-col gap-4">
+              <Link
+                href="/"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Home
+              </Link>
               <Link 
                 href="/eventos" 
                 className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
