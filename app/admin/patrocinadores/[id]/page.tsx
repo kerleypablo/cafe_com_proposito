@@ -10,7 +10,7 @@ interface AdminSponsorPageProps {
 }
 
 export const metadata = {
-  title: 'Editar Patrocinador | Admin Cafe com Proposito',
+  title: 'Editar Patrocinador | Admin Café com Propósito',
 }
 
 export default async function AdminSponsorPage({ params }: AdminSponsorPageProps) {

@@ -7,7 +7,7 @@ import { EVENT_SELECT, normalizeEvent } from '@/lib/events'
 import { CopyEventLinkButton } from '@/components/admin/copy-event-link-button'
 
 export const metadata = {
-  title: 'Eventos | Admin Cafe com Proposito',
+  title: 'Eventos | Admin Café com Propósito',
 }
 
 export default async function AdminEventosPage() {
@@ -73,7 +73,7 @@ export default async function AdminEventosPage() {
                   <Users className="size-4" />
                   <span>
                     {event.registration_count}
-                    {event.max_participants && ` / ${event.max_participants}`} inscricoes
+                    {event.max_participants && ` / ${event.max_participants}`} inscrições
                   </span>
                 </div>
               </div>
@@ -108,12 +108,12 @@ export default async function AdminEventosPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-serif text-3xl font-bold text-primary">Eventos</h1>
-          <p className="text-muted-foreground">Gerencie os encontros do Cafe com Proposito</p>
+          <p className="text-muted-foreground">Gerencie os encontros do Café com Propósito</p>
         </div>
         <Button asChild className="rounded-full">
           <Link href="/admin/eventos/novo">
             <Plus className="size-4" />
-            Novo Evento
+            Novo evento
           </Link>
         </Button>
       </div>
@@ -122,7 +122,7 @@ export default async function AdminEventosPage() {
         <div className="space-y-8">
           <section className="space-y-4">
             <div className="border-b border-border pb-3">
-              <h2 className="font-serif text-xl text-foreground">Proximos eventos</h2>
+              <h2 className="font-serif text-xl text-foreground">Próximos eventos</h2>
               <p className="text-sm text-muted-foreground">Encontros agendados e abertos para acompanhamento.</p>
             </div>
             {upcomingEvents.length > 0 ? (
@@ -132,7 +132,7 @@ export default async function AdminEventosPage() {
             ) : (
               <Card>
                 <CardContent className="py-8 text-center text-muted-foreground">
-                  Nenhum proximo evento cadastrado.
+                  Nenhum próximo evento cadastrado.
                 </CardContent>
               </Card>
             )}
@@ -140,8 +140,8 @@ export default async function AdminEventosPage() {
 
           <section className="space-y-4">
             <div className="border-b border-border pb-3">
-              <h2 className="font-serif text-xl text-foreground">Eventos que ja passaram</h2>
-              <p className="text-sm text-muted-foreground">Historico dos encontros anteriores.</p>
+              <h2 className="font-serif text-xl text-foreground">Eventos que já passaram</h2>
+              <p className="text-sm text-muted-foreground">Histórico dos encontros anteriores.</p>
             </div>
             {pastEvents.length > 0 ? (
               <div className="grid gap-4">

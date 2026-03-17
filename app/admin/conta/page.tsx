@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AccountForm } from '@/components/admin/account-form'
 
 export const metadata = {
-  title: 'Conta | Admin Cafe com Proposito',
+  title: 'Conta | Admin Café com Propósito',
 }
 
 export default async function AdminContaPage() {
@@ -21,7 +21,7 @@ export default async function AdminContaPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-serif">Seguranca de acesso</CardTitle>
+          <CardTitle className="font-serif">Segurança de acesso</CardTitle>
         </CardHeader>
         <CardContent>
           <AccountForm email={user?.email} />

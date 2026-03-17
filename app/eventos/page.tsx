@@ -4,8 +4,8 @@ import { EventCard } from '@/components/event-card'
 import { getPublicEvents } from '@/lib/public-data'
 
 export const metadata = {
-  title: 'Eventos | Cafe com Proposito',
-  description: 'Confira nossos proximos eventos e encontros mensais.',
+  title: 'Eventos | Café com Propósito',
+  description: 'Confira nossos próximos eventos e encontros mensais.',
 }
 
 export default async function EventosPage() {
@@ -23,14 +23,14 @@ export default async function EventosPage() {
               Nossos Eventos
             </h1>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Encontros mensais pensados para nutrir sua alma e fortalecer conexoes.
+              Encontros mensais pensados para nutrir sua alma e fortalecer conexões.
             </p>
           </div>
 
           {/* Upcoming Events */}
           <section className="mb-16">
               <h2 className="font-serif text-2xl font-semibold text-foreground mb-6">
-                Proximos Encontros
+                Próximos Encontros
               </h2>
             {upcomingWithCount.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

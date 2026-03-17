@@ -33,7 +33,7 @@ export function CopyEventLinkButton({
       className="rounded-full"
       onClick={handleCopy}
       disabled={disabled}
-      title={disabled ? 'Publique o evento para copiar o link publico' : 'Copiar link publico do evento'}
+      title={disabled ? 'Publique o evento para copiar o link público' : 'Copiar link público do evento'}
     >
       {copied ? <LinkIcon className="size-4" /> : <Copy className="size-4" />}
       <span className="sr-only sm:not-sr-only sm:ml-1">

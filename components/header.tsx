@@ -17,7 +17,7 @@ export function Header() {
           <Link href="/" className="flex items-center">
             <Image
               src="/icone_sfundo.png"
-              alt="Cafe com Proposito"
+              alt="Café com Propósito"
               width={104}
               height={104}
               priority
@@ -50,7 +50,7 @@ export function Header() {
                     className="block rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
                     onClick={() => setIsAboutOpen(false)}
                   >
-                    Sobre Cafe com Proposito
+                    Sobre Café com Propósito
                   </Link>
                   <Link
                     href="/sobre/cibele-barsante"
@@ -120,7 +120,7 @@ export function Header() {
                       setIsMenuOpen(false)
                     }}
                   >
-                    Sobre Cafe com Proposito
+                    Sobre Café com Propósito
                   </Link>
                   <Link
                     href="/sobre/cibele-barsante"

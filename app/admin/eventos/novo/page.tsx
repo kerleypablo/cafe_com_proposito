@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Novo Evento | Admin Cafe com Proposito',
+  title: 'Novo Evento | Admin Café com Propósito',
 }
 
 export default async function NovoEventoPage() {
@@ -20,7 +20,7 @@ export default async function NovoEventoPage() {
           </Link>
         </Button>
         <h1 className="font-serif text-3xl font-bold text-primary">Novo Evento</h1>
-        <p className="text-muted-foreground">Crie um novo encontro para o Cafe com Proposito</p>
+        <p className="text-muted-foreground">Crie um novo encontro para o Café com Propósito</p>
       </div>
 
       <div className="bg-card rounded-2xl p-6 border border-border">

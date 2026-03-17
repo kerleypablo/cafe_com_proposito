@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Cafe com Proposito',
-    short_name: 'Cafe com Proposito',
-    description: 'Encontros mensais para mulheres que buscam crescimento pessoal, fe e autocuidado',
+    name: 'Café com Propósito',
+    short_name: 'Café com Propósito',
+    description: 'Encontros mensais para mulheres que buscam crescimento pessoal, fé e autocuidado',
     start_url: '/',
     display: 'standalone',
     background_color: '#faf6f1',

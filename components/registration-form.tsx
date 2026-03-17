@@ -141,7 +141,7 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
         normalizedPhone &&
         existingParticipant.phone === normalizedPhone
       ) {
-        setError('Esse telefone ja esta vinculado a outro cadastro. Use o email ja cadastrado ou informe outro numero.')
+        setError('Esse telefone já está vinculado a outro cadastro. Use o email já cadastrado ou informe outro número.')
         setIsSubmitting(false)
         return
       }
@@ -153,7 +153,7 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
         .eq('id', participantId)
 
       if (updateParticipantError) {
-        setError('Nao foi possivel atualizar seus dados. Tente novamente.')
+        setError('Não foi possível atualizar seus dados. Tente novamente.')
         setIsSubmitting(false)
         return
       }
@@ -165,7 +165,7 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
         .single()
 
       if (participantError || !newParticipant) {
-        setError('Erro ao processar inscricao. Tente novamente.')
+        setError('Erro ao processar inscrição. Tente novamente.')
         setIsSubmitting(false)
         return
       }
@@ -187,7 +187,7 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
       .maybeSingle()
 
     if (existingRegistration || existingRegistrationByEmail) {
-      setError('Voce ja esta inscrita neste evento com esse cadastro.')
+      setError('Você já está inscrita neste evento com esse cadastro.')
       setIsSubmitting(false)
       return
     }
@@ -205,7 +205,7 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
       })
 
     if (registrationError) {
-      setError('Erro ao processar inscricao. Tente novamente.')
+      setError('Erro ao processar inscrição. Tente novamente.')
       setIsSubmitting(false)
       return
     }
@@ -236,12 +236,12 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
           <CheckCircle className="size-6 text-primary" />
         </div>
         <h3 className="font-serif text-lg font-semibold text-foreground mb-2">
-          {isFull ? 'Voce esta na lista de espera!' : 'Inscricao confirmada!'}
+          {isFull ? 'Você está na lista de espera!' : 'Inscrição confirmada!'}
         </h3>
         <p className="text-sm text-muted-foreground">
           {isFull 
             ? 'Entraremos em contato se uma vaga for liberada.'
-            : 'Nos vemos no encontro! Voce recebera mais informacoes por email.'}
+            : 'Nos vemos no encontro! Você receberá mais informações por email.'}
         </p>
       </div>
     )
@@ -299,7 +299,7 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="birthday" className="text-foreground">
-          Data de aniversario (opcional)
+          Data de aniversário (opcional)
         </Label>
         <Input
           id="birthday"
@@ -310,7 +310,7 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
           className="rounded-xl"
         />
         <p className="text-xs text-muted-foreground">
-          Se voce quiser, podemos usar essa informacao para mensagens especiais como aniversario.
+          Se você quiser, podemos usar essa informação para mensagens especiais, como aniversário.
         </p>
       </div>
 
@@ -323,10 +323,10 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
           />
           <div className="space-y-1">
             <Label htmlFor="save_data" className="text-foreground">
-              Salvar meus dados para proximas inscricoes
+              Salvar meus dados para próximas inscrições
             </Label>
             <p className="text-xs text-muted-foreground">
-              Assim voce nao precisa preencher tudo de novo quando participar de outros encontros.
+              Assim você não precisa preencher tudo de novo quando participar de outros encontros.
             </p>
           </div>
         </div>
@@ -334,7 +334,7 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
 
       {isLoadingExistingData && (
         <p className="text-xs text-muted-foreground">
-          Verificando se ja existe um cadastro com esses dados...
+          Verificando se já existe um cadastro com esses dados...
         </p>
       )}
 
@@ -351,11 +351,11 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
           ? 'Processando...' 
           : isFull 
             ? 'Entrar na lista de espera' 
-            : 'Confirmar inscricao'}
+            : 'Confirmar inscrição'}
       </Button>
 
       <p className="text-xs text-muted-foreground text-center">
-        Ao se inscrever, voce concorda em receber comunicacoes sobre este evento.
+        Ao se inscrever, você concorda em receber comunicações sobre este evento.
       </p>
     </form>
   )

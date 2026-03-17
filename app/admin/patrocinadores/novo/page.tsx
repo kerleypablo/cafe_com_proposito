@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { SponsorForm } from '@/components/admin/sponsor-form'
 
 export const metadata = {
-  title: 'Novo Patrocinador | Admin Cafe com Proposito',
+  title: 'Novo Patrocinador | Admin Café com Propósito',
 }
 
 export default async function NovoPatrocinadorPage() {
@@ -21,7 +21,7 @@ export default async function NovoPatrocinadorPage() {
           </Link>
         </Button>
         <h1 className="font-serif text-3xl font-bold text-primary">Novo patrocinador</h1>
-        <p className="text-muted-foreground">Adicione uma logo para o carrossel publico.</p>
+        <p className="text-muted-foreground">Adicione uma logo para o carrossel público.</p>
       </div>
 
       <div className="rounded-2xl border border-border bg-card p-6">

@@ -4,8 +4,8 @@ import { SuggestionForm } from '@/components/suggestion-form'
 import { Lightbulb } from 'lucide-react'
 
 export const metadata = {
-  title: 'Sugestoes | Cafe com Proposito',
-  description: 'Envie suas sugestoes de temas para nossos proximos encontros.',
+  title: 'Sugestões | Café com Propósito',
+  description: 'Envie suas sugestões de temas para nossos próximos encontros.',
 }
 
 export default function SugestoesPage() {
@@ -22,10 +22,10 @@ export default function SugestoesPage() {
                 <Lightbulb className="size-8 text-primary" />
               </div>
               <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Envie sua Sugestao
+                Envie sua Sugestão
               </h1>
               <p className="text-muted-foreground">
-                Suas ideias sao muito importantes para nos! Sugira temas, 
+                Suas ideias são muito importantes para nós! Sugira temas,
                 atividades ou qualquer coisa que gostaria de ver em nossos encontros.
               </p>
             </div>

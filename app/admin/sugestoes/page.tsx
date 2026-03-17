@@ -4,7 +4,7 @@ import { SuggestionActions } from '@/components/admin/suggestion-actions'
 import { User, Clock } from 'lucide-react'
 
 export const metadata = {
-  title: 'Mensagens | Admin Cafe com Proposito',
+  title: 'Mensagens | Admin Café com Propósito',
 }
 
 export default async function AdminSugestoesPage() {
@@ -23,7 +23,7 @@ export default async function AdminSugestoesPage() {
       <div>
         <h1 className="font-serif text-3xl font-bold text-primary">Mensagens</h1>
         <p className="text-muted-foreground">
-          Sugestoes, pedidos de oracao e agradecimentos enviados pela comunidade
+          Sugestões, pedidos de oração e agradecimentos enviados pela comunidade
         </p>
       </div>
 
@@ -53,7 +53,7 @@ export default async function AdminSugestoesPage() {
                         <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <User className="size-4" />
-                            <span>{suggestion.name || 'Anonimo'}</span>
+                            <span>{suggestion.name || 'Anônimo'}</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <Clock className="size-4" />
@@ -72,7 +72,7 @@ export default async function AdminSugestoesPage() {
           <Card>
             <CardContent className="py-8 text-center">
               <p className="text-muted-foreground">
-                Nenhuma sugestao pendente
+                Nenhuma sugestão pendente
               </p>
             </CardContent>
           </Card>
@@ -106,7 +106,7 @@ export default async function AdminSugestoesPage() {
                           {suggestion.suggestion}
                         </p>
                         <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                          <span>{suggestion.name || 'Anonimo'}</span>
+                          <span>{suggestion.name || 'Anônimo'}</span>
                           <span>-</span>
                           <span>{formattedDate}</span>
                         </div>

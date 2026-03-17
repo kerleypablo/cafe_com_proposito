@@ -7,7 +7,7 @@ import { buildWhatsappLink } from '@/lib/whatsapp'
 import { EventsLineChart } from '@/components/admin/events-line-chart'
 
 export const metadata = {
-  title: 'Dashboard | Admin Cafe com Proposito',
+  title: 'Dashboard | Admin Café com Propósito',
 }
 
 export default async function AdminDashboardPage() {
@@ -74,13 +74,13 @@ export default async function AdminDashboardPage() {
 
   const stats = [
     { 
-      label: 'Total de Eventos', 
+      label: 'Total de eventos',
       value: totalEvents || 0, 
       icon: Calendar,
       href: '/admin/eventos'
     },
     { 
-      label: 'Eventos Futuros', 
+      label: 'Eventos futuros',
       value: upcomingEvents || 0, 
       icon: Calendar,
       href: '/admin/eventos'
@@ -92,13 +92,13 @@ export default async function AdminDashboardPage() {
       href: '/admin/participantes'
     },
     { 
-      label: 'Inscricoes Confirmadas', 
+      label: 'Inscrições confirmadas',
       value: totalRegistrations || 0, 
       icon: UserCheck,
       href: '/admin/participantes'
     },
     { 
-      label: 'Novas Mensagens', 
+      label: 'Novas mensagens',
       value: pendingSuggestions || 0, 
       icon: Lightbulb,
       href: '/admin/sugestoes'
@@ -109,14 +109,14 @@ export default async function AdminDashboardPage() {
     <div className="space-y-8">
       <div>
         <h1 className="font-serif text-3xl font-bold text-primary">Dashboard</h1>
-        <p className="text-muted-foreground">Visao geral do Cafe com Proposito</p>
+        <p className="text-muted-foreground">Visão geral do Café com Propósito</p>
       </div>
 
       <Card className="overflow-hidden border-primary/20 bg-[linear-gradient(135deg,#f8efe6_0%,#fffaf5_60%,#f3e6d7_100%)]">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 font-serif text-xl">
             <Cake className="size-5 text-primary" />
-            Aniversariantes do Mes
+            Aniversariantes do mês
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -158,7 +158,7 @@ export default async function AdminDashboardPage() {
             </div>
           ) : (
             <p className="py-2 text-center text-muted-foreground">
-              Nenhum aniversariante cadastrado neste mes
+              Nenhum aniversariante cadastrado neste mês
             </p>
           )}
         </CardContent>
@@ -193,7 +193,7 @@ export default async function AdminDashboardPage() {
         <CardHeader>
           <CardTitle className="font-serif text-primary">Participantes por evento</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Evolucao de inscritas confirmadas em cada encontro cadastrado.
+            Evolução de inscritas confirmadas em cada encontro cadastrado.
           </p>
         </CardHeader>
         <CardContent>
@@ -201,7 +201,7 @@ export default async function AdminDashboardPage() {
             <EventsLineChart data={chartData} />
           ) : (
             <p className="py-8 text-center text-muted-foreground">
-              Ainda nao ha eventos suficientes para montar o grafico.
+              Ainda não há eventos suficientes para montar o gráfico.
             </p>
           )}
         </CardContent>
@@ -211,7 +211,7 @@ export default async function AdminDashboardPage() {
         {/* Upcoming Events */}
         <Card>
           <CardHeader>
-            <CardTitle className="font-serif">Proximos Eventos</CardTitle>
+            <CardTitle className="font-serif">Próximos eventos</CardTitle>
           </CardHeader>
           <CardContent>
             {normalizedNextEvents.length > 0 ? (
@@ -238,7 +238,7 @@ export default async function AdminDashboardPage() {
                       </div>
                       <div className="text-right">
                         <p className="font-semibold text-foreground">{registrationCount}</p>
-                        <p className="text-xs text-muted-foreground">inscricoes</p>
+                        <p className="text-xs text-muted-foreground">inscrições</p>
                       </div>
                     </Link>
                   )
@@ -255,7 +255,7 @@ export default async function AdminDashboardPage() {
         {/* Recent Registrations */}
         <Card>
           <CardHeader>
-            <CardTitle className="font-serif">Inscricoes Recentes</CardTitle>
+            <CardTitle className="font-serif">Inscrições recentes</CardTitle>
           </CardHeader>
           <CardContent>
             {recentRegistrations && recentRegistrations.length > 0 ? (
@@ -282,7 +282,7 @@ export default async function AdminDashboardPage() {
               </div>
             ) : (
               <p className="text-muted-foreground text-center py-4">
-                Nenhuma inscricao recente
+                Nenhuma inscrição recente
               </p>
             )}
           </CardContent>

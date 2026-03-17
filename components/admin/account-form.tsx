@@ -33,7 +33,7 @@ export function AccountForm({ email }: AccountFormProps) {
     }
 
     if (password !== confirmPassword) {
-      setError('As senhas nao conferem.')
+      setError('As senhas não conferem.')
       setIsSubmitting(false)
       return
     }
@@ -45,7 +45,7 @@ export function AccountForm({ email }: AccountFormProps) {
       if (updateError.message) {
         setError(updateError.message)
       } else {
-        setError('Nao foi possivel atualizar a senha.')
+        setError('Não foi possível atualizar a senha.')
       }
       setIsSubmitting(false)
       return

@@ -104,7 +104,7 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
     const values = Array.from({ length: max }, (_, index) => String(index + 1))
     await runRollingAnimation(values, (finalNumber) => {
       setWinner({
-        title: `Numero ${finalNumber}`,
+        title: `Número ${finalNumber}`,
         subtitle: `Sorteado entre 1 e ${max}`,
       })
     })
@@ -120,7 +120,7 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
           icon: Gift,
         }
       : {
-          label: 'Sortear numero',
+          label: 'Sortear número',
           onClick: handleNumberRaffle,
           disabled: isRolling || !Number(maxNumber),
           icon: Shuffle,
@@ -148,7 +148,7 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
               >
                 <Users className="mb-3 size-5" />
                 <p className="font-medium">Participante</p>
-                <p className="mt-1 text-sm">Escolhe alguem inscrito em um evento.</p>
+                <p className="mt-1 text-sm">Escolhe alguém inscrito em um evento.</p>
               </button>
 
               <button
@@ -162,8 +162,8 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
                 )}
               >
                 <HashIcon />
-                <p className="mt-3 font-medium">Numero</p>
-                <p className="mt-1 text-sm">Sorteia um numero ate o limite informado.</p>
+                <p className="mt-3 font-medium">Número</p>
+                <p className="mt-1 text-sm">Sorteia um número até o limite informado.</p>
               </button>
             </div>
 
@@ -198,7 +198,7 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
             ) : (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Numero maximo</label>
+                  <label className="text-sm font-medium text-foreground">Número máximo</label>
                   <Input
                     type="number"
                     min="1"
@@ -211,7 +211,7 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
                 <div className="rounded-2xl border border-border/70 bg-secondary/30 p-4">
                   <p className="text-sm font-medium text-foreground">Faixa do sorteio</p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Sera sorteado um numero aleatorio entre 1 e {maxNumber || '0'}.
+                    Será sorteado um número aleatório entre 1 e {maxNumber || '0'}.
                   </p>
                 </div>
 
@@ -301,7 +301,7 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
                   {winner?.subtitle ||
                     (mode === 'participant'
                       ? 'Escolha um evento e inicie o sorteio.'
-                      : 'Defina o limite maximo e inicie o sorteio.')}
+                      : 'Defina o limite máximo e inicie o sorteio.')}
                 </p>
 
                 <Button

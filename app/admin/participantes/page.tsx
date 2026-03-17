@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
 export const metadata = {
-  title: 'Participantes | Admin Cafe com Proposito',
+  title: 'Participantes | Admin Café com Propósito',
 }
 
 export default async function AdminParticipantesPage({
@@ -58,7 +58,7 @@ export default async function AdminParticipantesPage({
       <div>
         <h1 className="font-serif text-3xl font-bold text-primary">Participantes</h1>
         <p className="text-muted-foreground">
-          Todas as pessoas que ja se inscreveram em eventos
+          Todas as pessoas que já se inscreveram em eventos
         </p>
       </div>
 

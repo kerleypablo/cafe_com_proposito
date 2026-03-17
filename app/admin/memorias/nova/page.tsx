@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { PastHighlightForm } from '@/components/admin/past-highlight-form'
 
 export const metadata = {
-  title: 'Nova Memoria | Admin Cafe com Proposito',
+  title: 'Nova Memória | Admin Café com Propósito',
 }
 
 interface NovaMemoriaPageProps {
@@ -38,8 +38,8 @@ export default async function NovaMemoriaPage({ searchParams }: NovaMemoriaPageP
             Voltar
           </Link>
         </Button>
-        <h1 className="font-serif text-3xl font-bold text-primary">Nova memoria</h1>
-        <p className="text-muted-foreground">Crie um conteudo para a secao de eventos anteriores.</p>
+        <h1 className="font-serif text-3xl font-bold text-primary">Nova memória</h1>
+        <p className="text-muted-foreground">Crie um conteúdo para a seção de eventos anteriores.</p>
       </div>
 
       {pastEvents && pastEvents.length > 0 && (
@@ -47,7 +47,7 @@ export default async function NovaMemoriaPage({ searchParams }: NovaMemoriaPageP
           <div className="mb-4 space-y-1">
             <h2 className="font-serif text-2xl text-primary">Criar a partir de um evento encerrado</h2>
             <p className="text-sm text-muted-foreground">
-              Escolha um evento passado para puxar titulo, data, descricao e imagem inicial.
+              Escolha um evento passado para puxar título, data, descrição e imagem inicial.
             </p>
           </div>
 

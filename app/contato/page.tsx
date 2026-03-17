@@ -3,8 +3,8 @@ import { Header } from '@/components/header'
 import { Instagram, Mail, MessageCircle } from 'lucide-react'
 
 export const metadata = {
-  title: 'Contato | Cafe com Proposito',
-  description: 'Entre em contato com o Cafe com Proposito.',
+  title: 'Contato | Café com Propósito',
+  description: 'Entre em contato com o Café com Propósito.',
 }
 
 const instagramUrl = 'https://instagram.com/cafecompropositobarssante'
@@ -22,7 +22,7 @@ export default function ContatoPage() {
             <div className="overflow-hidden rounded-[2.2rem] shadow-[0_30px_80px_-44px_rgba(0,0,0,0.38)]">
               <img
                 src="/background.png"
-                alt="Contato Cafe com Proposito"
+                alt="Contato Café com Propósito"
                 className="h-full min-h-[28rem] w-full object-cover"
               />
             </div>
@@ -31,11 +31,11 @@ export default function ContatoPage() {
               <div className="space-y-4">
                 <p className="text-sm uppercase tracking-[0.4em] text-primary/70">Contato</p>
                 <h1 className="font-serif text-4xl text-foreground md:text-5xl">
-                  Fale com o Cafe com Proposito
+                  Fale com o Café com Propósito
                 </h1>
                 <p className="text-lg leading-8 text-muted-foreground">
-                  Este espaco ja esta pronto para receber sua foto e os contatos oficiais.
-                  Quando voce me mandar o WhatsApp e o email corretos, eu troco aqui.
+                  Este espaço já está pronto para receber sua foto e os contatos oficiais.
+                  Quando você me mandar o WhatsApp e o email corretos, eu troco aqui.
                 </p>
               </div>
 

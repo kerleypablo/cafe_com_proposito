@@ -44,7 +44,7 @@ export default async function HomePage() {
             <div className="grid w-full gap-8 lg:grid-cols-[0.9fr_0.72fr] lg:items-end lg:justify-between">
               <div className="max-w-2xl space-y-5 text-white">
                 <p className="text-sm uppercase tracking-[0.45em] text-white/70">
-                  Cafe com Proposito
+                  Café com Propósito
                 </p>
                 <h1 className="font-serif text-4xl leading-[0.98] md:text-6xl">
                   Encontros com beleza, profundidade e presença real.
@@ -62,7 +62,7 @@ export default async function HomePage() {
                     </Link>
                   </Button>
                   <Button asChild size="lg" variant="outline" className="rounded-full border-white/35 bg-white/10 text-white hover:bg-white/15">
-                    <Link href="/sobre">Conhecer a historia</Link>
+                    <Link href="/sobre">Conhecer a história</Link>
                   </Button>
                 </div>
 
@@ -76,7 +76,7 @@ export default async function HomePage() {
                 {normalizedNextEvent ? (
                   <div className="space-y-5 text-white">
                     <div className="space-y-2">
-                      <p className="text-sm uppercase tracking-[0.35em] text-white/60">Proximo encontro</p>
+                      <p className="text-sm uppercase tracking-[0.35em] text-white/60">Próximo encontro</p>
                       <h2 className="font-serif text-2xl md:text-3xl">{normalizedNextEvent.title}</h2>
                       {normalizedNextEvent.description && (
                         <p className="line-clamp-3 text-sm leading-6 text-white/78">
@@ -106,14 +106,14 @@ export default async function HomePage() {
 
                     <Button asChild className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
                       <Link href={`/eventos/${normalizedNextEvent.id}`}>
-                        Inscrever-se no proximo evento
+                        Inscrever-se no próximo evento
                         <ArrowRight className="size-4" />
                       </Link>
                     </Button>
                   </div>
                 ) : (
                   <div className="space-y-4 text-white">
-                    <p className="text-sm uppercase tracking-[0.35em] text-white/60">Proximo encontro</p>
+                    <p className="text-sm uppercase tracking-[0.35em] text-white/60">Próximo encontro</p>
                     <h2 className="font-serif text-3xl">Em breve teremos uma nova data</h2>
                     <p className="text-sm leading-7 text-white/78">
                       Assim que o próximo encontro for publicado, ele aparecerá aqui com data, contagem regressiva e botão de inscrição.
@@ -136,10 +136,10 @@ export default async function HomePage() {
               <div className="space-y-4">
                 <p className="text-sm uppercase tracking-[0.35em] text-primary/70">Mensagens</p>
                 <h2 className="font-serif text-3xl text-foreground md:text-4xl">
-                  Sugestoes, oracoes e agradecimentos
+                  Sugestões, orações e agradecimentos
                 </h2>
                 <p className="max-w-lg leading-8 text-muted-foreground">
-                  Se quiser compartilhar algo com a nossa comunidade, este espaco esta aberto para sua mensagem.
+                  Se quiser compartilhar algo com a nossa comunidade, este espaço está aberto para sua mensagem.
                 </p>
               </div>
 

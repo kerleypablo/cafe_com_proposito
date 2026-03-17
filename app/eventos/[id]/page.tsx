@@ -16,11 +16,11 @@ export async function generateMetadata({ params }: EventPageProps) {
   const event = await getPublicEventMetaById(id)
 
   if (!event) {
-    return { title: 'Evento nao encontrado | Cafe com Proposito' }
+    return { title: 'Evento não encontrado | Café com Propósito' }
   }
 
   return {
-    title: `${event.title} | Cafe com Proposito`,
+    title: `${event.title} | Café com Propósito`,
     description: event.description || 'Participe deste encontro especial.',
   }
 }
@@ -116,7 +116,7 @@ export default async function EventPage({ params }: EventPageProps) {
                 {isPastEvent ? (
                   <div className="text-center py-4">
                     <p className="text-muted-foreground">
-                      Este evento ja aconteceu.
+                      Este evento já aconteceu.
                     </p>
                   </div>
                 ) : (

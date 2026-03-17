@@ -18,7 +18,7 @@ interface EventsLineChartProps {
 
 const chartConfig = {
   registrations: {
-    label: 'Inscricoes',
+    label: 'Inscrições',
     color: 'var(--color-primary)',
   },
 }
@@ -49,7 +49,7 @@ export function EventsLineChart({ data }: EventsLineChartProps) {
           content={
             <ChartTooltipContent
               labelFormatter={(_, payload) => payload?.[0]?.payload?.title || ''}
-              formatter={(value) => [`${value} inscricoes`, 'Participantes']}
+              formatter={(value) => [`${value} inscrições`, 'Participantes']}
             />
           }
         />

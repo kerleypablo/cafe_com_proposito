@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: EditEventPageProps) {
     .single()
 
   return {
-    title: event ? `Editar ${event.title} | Admin` : 'Evento nao encontrado',
+    title: event ? `Editar ${event.title} | Admin` : 'Evento não encontrado',
   }
 }
 
@@ -76,7 +76,7 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
             <CardHeader>
               <CardTitle className="font-serif flex items-center gap-2">
                 <Users className="size-5" />
-                Inscricoes ({registrations?.length || 0})
+                Inscrições ({registrations?.length || 0})
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -137,7 +137,7 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
                 </div>
               ) : (
                 <p className="text-muted-foreground text-center py-4">
-                  Nenhuma inscricao ainda
+                  Nenhuma inscrição ainda
                 </p>
               )}
             </CardContent>

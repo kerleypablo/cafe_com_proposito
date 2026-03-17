@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils'
 const items = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/eventos', label: 'Eventos', icon: Calendar },
-  { href: '/admin/memorias', label: 'Memorias', icon: Images },
+  { href: '/admin/memorias', label: 'Memórias', icon: Images },
   { href: '/admin/sorteio', label: 'Sorteio', icon: Gift },
   { href: '/admin/participantes', label: 'Partic.', icon: Users },
   { href: '/admin/sugestoes', label: 'Mensagens', icon: Lightbulb },

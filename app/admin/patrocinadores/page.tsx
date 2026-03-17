@@ -7,7 +7,7 @@ import { SponsorVisibilityToggle } from '@/components/admin/sponsor-visibility-t
 import { SponsorSearchInput } from '@/components/admin/sponsor-search-input'
 
 export const metadata = {
-  title: 'Patrocinadores | Admin Cafe com Proposito',
+  title: 'Patrocinadores | Admin Café com Propósito',
 }
 
 export default async function AdminPatrocinadoresPage({
@@ -35,7 +35,7 @@ export default async function AdminPatrocinadoresPage({
         <div>
           <h1 className="font-serif text-3xl font-bold text-primary">Patrocinadores</h1>
           <p className="text-muted-foreground">
-            Gerencie as logos cadastradas e marque com clareza quais devem aparecer no carrossel publico.
+            Gerencie as logos cadastradas e marque com clareza quais devem aparecer no carrossel público.
           </p>
         </div>
         <Button asChild className="rounded-full">

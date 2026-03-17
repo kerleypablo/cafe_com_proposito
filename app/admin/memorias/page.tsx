@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Plus, Image as ImageIcon, Download, Edit } from 'lucide-react'
 
 export const metadata = {
-  title: 'Memorias | Admin Cafe com Proposito',
+  title: 'Memórias | Admin Café com Propósito',
 }
 
 export default async function AdminMemoriasPage() {
@@ -21,13 +21,13 @@ export default async function AdminMemoriasPage() {
         <div>
           <h1 className="font-serif text-3xl font-bold text-primary">Eventos anteriores</h1>
           <p className="text-muted-foreground">
-            Gerencie os conteudos que aparecem no carrossel publico de memorias.
+            Gerencie os conteúdos que aparecem no carrossel público de memórias.
           </p>
         </div>
         <Button asChild className="rounded-full">
           <Link href="/admin/memorias/nova">
             <Plus className="size-4" />
-            Nova memoria
+            Nova memória
           </Link>
         </Button>
       </div>
@@ -99,7 +99,7 @@ export default async function AdminMemoriasPage() {
         <Card>
           <CardContent className="py-12 text-center">
             <ImageIcon className="mx-auto mb-4 size-8 text-muted-foreground" />
-            <p className="text-muted-foreground">Nenhuma memoria cadastrada ainda.</p>
+            <p className="text-muted-foreground">Nenhuma memória cadastrada ainda.</p>
           </CardContent>
         </Card>
       )}

@@ -11,17 +11,17 @@ export function Footer() {
             <div className="flex items-center gap-2">
               <Image
                 src="/icone_sfundo.png"
-                alt="Cafe com Proposito"
+                alt="Café com Propósito"
                 width={40}
                 height={40}
                 className="h-10 w-auto"
               />
               <span className="font-serif text-lg font-semibold text-foreground">
-                Cafe com Proposito
+                Café com Propósito
               </span>
             </div>
             <p className="max-w-md text-center text-sm text-muted-foreground">
-              Encontros mensais para mulheres que buscam crescimento pessoal, fe e autocuidado.
+              Encontros mensais para mulheres que buscam crescimento pessoal, fé e autocuidado.
             </p>
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <span>Feito com</span>

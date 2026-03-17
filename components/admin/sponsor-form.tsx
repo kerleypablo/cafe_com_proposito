@@ -95,7 +95,7 @@ export function SponsorForm({ sponsor }: SponsorFormProps) {
       try {
         imageUrl = await uploadImage(selectedFile)
       } catch {
-        setError('Nao foi possivel enviar a imagem do patrocinador.')
+        setError('Não foi possível enviar a imagem do patrocinador.')
         setIsSubmitting(false)
         return
       }
@@ -121,7 +121,7 @@ export function SponsorForm({ sponsor }: SponsorFormProps) {
     const { error: saveError } = await query
 
     if (saveError) {
-      setError('Nao foi possivel salvar esse patrocinador.')
+      setError('Não foi possível salvar esse patrocinador.')
       setIsSubmitting(false)
       return
     }
@@ -171,7 +171,7 @@ export function SponsorForm({ sponsor }: SponsorFormProps) {
               {selectedFile ? selectedFile.name : sponsor?.image_url ? 'Trocar imagem atual' : 'Selecionar imagem'}
             </div>
             <p className="text-xs text-muted-foreground">
-              A imagem sera reduzida automaticamente para ficar leve no carrossel.
+              A imagem será reduzida automaticamente para ficar leve no carrossel.
             </p>
           </div>
           <span className="rounded-full bg-card px-3 py-1 text-xs text-muted-foreground shadow-sm">
@@ -205,14 +205,14 @@ export function SponsorForm({ sponsor }: SponsorFormProps) {
           defaultChecked={sponsor?.is_active ?? true}
           className="size-4"
         />
-        <span className="text-sm text-foreground">Exibir no carrossel publico</span>
+        <span className="text-sm text-foreground">Exibir no carrossel público</span>
       </label>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       <div className="flex flex-col gap-4 sm:flex-row">
         <Button type="submit" disabled={isSubmitting} className="rounded-full">
-          {isSubmitting ? 'Salvando...' : sponsor ? 'Salvar alteracoes' : 'Criar patrocinador'}
+          {isSubmitting ? 'Salvando...' : sponsor ? 'Salvar alterações' : 'Criar patrocinador'}
         </Button>
         <Button type="button" variant="outline" onClick={() => router.back()} className="rounded-full">
           Cancelar

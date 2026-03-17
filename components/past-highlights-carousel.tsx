@@ -79,9 +79,9 @@ export function PastHighlightsCarousel({ highlights }: PastHighlightsCarouselPro
   return (
     <div className="space-y-6">
       <div className="space-y-3 text-center">
-        <p className="text-sm uppercase tracking-[0.35em] text-primary/70">Memorias</p>
+        <p className="text-sm uppercase tracking-[0.35em] text-primary/70">Memórias</p>
         <h2 className="font-serif text-3xl text-foreground md:text-4xl">
-          Encontros que ja marcaram nossa historia
+          Encontros que já marcaram nossa história
         </h2>
       </div>
 
@@ -106,7 +106,7 @@ export function PastHighlightsCarousel({ highlights }: PastHighlightsCarouselPro
             560: { perPage: 1 },
           },
         }}
-        aria-label="Memorias dos encontros anteriores"
+        aria-label="Memórias dos encontros anteriores"
       >
         {highlights.map((highlight) => (
           <SplideSlide key={highlight.id} className="px-1 py-2">

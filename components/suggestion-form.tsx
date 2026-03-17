@@ -73,7 +73,7 @@ export function SuggestionForm() {
         <Textarea
           id="suggestion"
           name="suggestion"
-          placeholder="Deixe sua sugestao, pedido de oracao, agradecimento ou qualquer mensagem..."
+          placeholder="Deixe sua sugestão, pedido de oração, agradecimento ou qualquer mensagem..."
           required
           rows={5}
           className="resize-none rounded-xl"

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { buildWhatsappLink } from '@/lib/whatsapp'
 
 export const metadata = {
-  title: 'Detalhes do Participante | Admin Cafe com Proposito',
+  title: 'Detalhes do Participante | Admin Café com Propósito',
 }
 
 export default async function AdminParticipanteDetalhePage({
@@ -99,7 +99,7 @@ export default async function AdminParticipanteDetalhePage({
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-serif">Historico de participacao</CardTitle>
+          <CardTitle className="font-serif">Histórico de participação</CardTitle>
         </CardHeader>
         <CardContent>
           {registrations && registrations.length > 0 ? (
@@ -138,7 +138,7 @@ export default async function AdminParticipanteDetalhePage({
               })}
             </div>
           ) : (
-            <p className="text-muted-foreground">Nenhum historico encontrado.</p>
+            <p className="text-muted-foreground">Nenhum histórico encontrado.</p>
           )}
         </CardContent>
       </Card>

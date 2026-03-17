@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { RafflePanel } from '@/components/admin/raffle-panel'
 
 export const metadata = {
-  title: 'Sorteio | Admin Cafe com Proposito',
+  title: 'Sorteio | Admin Café com Propósito',
 }
 
 export default async function AdminSorteioPage() {
@@ -25,7 +25,7 @@ export default async function AdminSorteioPage() {
       <div className="space-y-2">
         <h1 className="font-serif text-3xl font-bold text-primary">Sorteio</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Escolha entre sortear uma participante inscrita em um evento ou gerar um numero aleatorio com animacao.
+          Escolha entre sortear uma participante inscrita em um evento ou gerar um número aleatório com animação.
         </p>
       </div>
 

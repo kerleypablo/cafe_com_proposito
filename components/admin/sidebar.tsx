@@ -24,10 +24,10 @@ import { useState } from 'react'
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/eventos', label: 'Eventos', icon: Calendar },
-  { href: '/admin/memorias', label: 'Memorias', icon: Images },
+  { href: '/admin/memorias', label: 'Memórias', icon: Images },
   { href: '/admin/sorteio', label: 'Sorteio', icon: Gift },
   { href: '/admin/participantes', label: 'Participantes', icon: Users },
-  { href: '/admin/sugestoes', label: 'Sugestoes', icon: Lightbulb },
+  { href: '/admin/sugestoes', label: 'Sugestões', icon: Lightbulb },
   { href: '/admin/patrocinadores', label: 'Patrocinadores', icon: Handshake },
   { href: '/admin/conta', label: 'Conta', icon: Settings },
 ]
@@ -59,12 +59,12 @@ export function AdminSidebar() {
           <Link href="/admin" className="flex items-center gap-2">
             <Image
               src="/icone_sfundo.png"
-              alt="Cafe com Proposito"
+              alt="Café com Propósito"
               width={44}
               height={44}
               className="h-11 w-auto"
             />
-            <span className="font-serif font-semibold text-foreground">Cafe com Proposito</span>
+            <span className="font-serif font-semibold text-foreground">Café com Propósito</span>
           </Link>
           <Button
             variant="ghost"
@@ -95,14 +95,14 @@ export function AdminSidebar() {
           <Link href="/admin" className="flex items-center gap-2">
             <Image
               src="/icone_sfundo.png"
-              alt="Cafe com Proposito"
+              alt="Café com Propósito"
               width={64}
               height={64}
               className="h-14 w-auto"
             />
             <div>
               <span className="font-serif font-semibold text-foreground block">
-                Cafe com Proposito
+                Café com Propósito
               </span>
               <span className="text-xs text-muted-foreground">Admin</span>
             </div>

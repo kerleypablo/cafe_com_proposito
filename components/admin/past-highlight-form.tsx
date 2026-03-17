@@ -108,14 +108,14 @@ export function PastHighlightForm({ highlight, initialEvent }: PastHighlightForm
       try {
         imageUrls = await Promise.all(imageFiles.map(uploadImage))
       } catch {
-        setError('Nao foi possivel enviar a imagem para o Supabase Storage.')
+        setError('Não foi possível enviar a imagem para o Supabase Storage.')
         setIsSubmitting(false)
         return
       }
     }
 
     if (imageUrls.length === 0) {
-      setError('Selecione entre 1 e 3 imagens para essa memoria.')
+      setError('Selecione entre 1 e 3 imagens para essa memória.')
       setIsSubmitting(false)
       return
     }
@@ -140,7 +140,7 @@ export function PastHighlightForm({ highlight, initialEvent }: PastHighlightForm
     const { error: saveError } = await query
 
     if (saveError) {
-      setError('Nao foi possivel salvar esse conteudo.')
+      setError('Não foi possível salvar esse conteúdo.')
       setIsSubmitting(false)
       return
     }
@@ -176,7 +176,7 @@ export function PastHighlightForm({ highlight, initialEvent }: PastHighlightForm
       .eq('id', highlight.id)
 
     if (deleteError) {
-      setError('Nao foi possivel remover esse conteudo.')
+      setError('Não foi possível remover esse conteúdo.')
       setIsDeleting(false)
       return
     }
@@ -194,7 +194,7 @@ export function PastHighlightForm({ highlight, initialEvent }: PastHighlightForm
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="title">Titulo *</Label>
+          <Label htmlFor="title">Título *</Label>
           <Input id="title" name="title" required defaultValue={highlight?.title || initialEvent?.title || ''} className="rounded-xl" />
         </div>
 
@@ -211,7 +211,7 @@ export function PastHighlightForm({ highlight, initialEvent }: PastHighlightForm
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="subtitle">Subtitulo</Label>
+        <Label htmlFor="subtitle">Subtítulo</Label>
         <Input
           id="subtitle"
           name="subtitle"
@@ -233,7 +233,7 @@ export function PastHighlightForm({ highlight, initialEvent }: PastHighlightForm
       </div>
 
       <div className="space-y-3">
-        <Label htmlFor="image_files">Imagens da memoria *</Label>
+        <Label htmlFor="image_files">Imagens da memória *</Label>
         <label
           htmlFor="image_files"
           className="flex cursor-pointer items-center justify-between rounded-2xl border border-dashed border-border bg-secondary/20 px-4 py-4 transition-colors hover:bg-secondary/35"
@@ -248,7 +248,7 @@ export function PastHighlightForm({ highlight, initialEvent }: PastHighlightForm
                     : 'Selecionar imagens')}
             </div>
             <p className="text-xs text-muted-foreground">
-              PNG, JPG ou WEBP. Maximo de 3 imagens. Voce pode selecionar mais de uma vez ate completar as 3.
+              PNG, JPG ou WEBP. Máximo de 3 imagens. Você pode selecionar mais de uma vez até completar as 3.
             </p>
           </div>
           <span className="rounded-full bg-card px-3 py-1 text-xs text-muted-foreground shadow-sm">
@@ -301,7 +301,7 @@ export function PastHighlightForm({ highlight, initialEvent }: PastHighlightForm
               <div key={`${imageUrl}-${index}`} className="overflow-hidden rounded-xl border border-border">
                 <img
                   src={imageUrl}
-                  alt={`${highlight?.title || initialEvent?.title || 'Memoria'} ${index + 1}`}
+                  alt={`${highlight?.title || initialEvent?.title || 'Memória'} ${index + 1}`}
                   className="h-24 w-full object-cover"
                 />
               </div>
@@ -320,7 +320,7 @@ export function PastHighlightForm({ highlight, initialEvent }: PastHighlightForm
           className="rounded-xl"
         />
         <p className="text-xs text-muted-foreground">
-          Se ficar vazio, o botao nao aparece no site.
+          Se ficar vazio, o botão não aparece no site.
         </p>
       </div>
 
@@ -338,7 +338,7 @@ export function PastHighlightForm({ highlight, initialEvent }: PastHighlightForm
 
       <div className="flex flex-col gap-4 sm:flex-row">
         <Button type="submit" disabled={isSubmitting} className="rounded-full">
-          {isSubmitting ? 'Salvando...' : highlight ? 'Salvar alteracoes' : 'Criar memoria'}
+          {isSubmitting ? 'Salvando...' : highlight ? 'Salvar alterações' : 'Criar memória'}
         </Button>
         <Button type="button" variant="outline" onClick={() => router.back()} className="rounded-full">
           Cancelar
