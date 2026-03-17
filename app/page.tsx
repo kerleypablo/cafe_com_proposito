@@ -136,7 +136,7 @@ export default async function HomePage() {
               <div className="space-y-4">
                 <p className="text-sm uppercase tracking-[0.35em] text-primary/70">Mensagens</p>
                 <h2 className="font-serif text-3xl text-foreground md:text-4xl">
-                  Sugestões, orações e agradecimentos
+                  Sugestoes, oracoes e agradecimentos
                 </h2>
                 <p className="max-w-lg leading-8 text-muted-foreground">
                   Se quiser compartilhar algo com a nossa comunidade, este espaço está aberto para sua mensagem.

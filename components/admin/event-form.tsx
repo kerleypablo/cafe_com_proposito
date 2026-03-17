@@ -75,7 +75,7 @@ export function EventForm({ event }: EventFormProps) {
       try {
         imageUrl = await uploadImage(selectedFile)
       } catch {
-        setError('Não foi possível enviar a imagem do evento.')
+        setError('Nao foi possivel enviar a imagem do evento.')
         setIsSubmitting(false)
         return
       }
@@ -134,7 +134,7 @@ export function EventForm({ event }: EventFormProps) {
 
   async function handleDelete() {
     if (!event) return
-    if (!confirm('Tem certeza que deseja excluir este evento? Esta ação não pode ser desfeita.')) return
+    if (!confirm('Tem certeza que deseja excluir este evento? Esta acao nao pode ser desfeita.')) return
 
     setIsDeleting(true)
     const supabase = createClient()
@@ -169,7 +169,7 @@ export function EventForm({ event }: EventFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label htmlFor="title">Título do Evento *</Label>
+          <Label htmlFor="title">Titulo do Evento *</Label>
           <Input
             id="title"
             name="title"
@@ -196,7 +196,7 @@ export function EventForm({ event }: EventFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">Descrição</Label>
+        <Label htmlFor="description">Descricao</Label>
         <Textarea
           id="description"
           name="description"
@@ -221,7 +221,7 @@ export function EventForm({ event }: EventFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="time">Horário *</Label>
+          <Label htmlFor="time">Horario *</Label>
           <Input
             id="time"
             name="time"
@@ -270,7 +270,7 @@ export function EventForm({ event }: EventFormProps) {
               {selectedFile ? selectedFile.name : event?.image_url ? 'Trocar imagem atual' : 'Selecionar imagem'}
             </div>
             <p className="text-xs text-muted-foreground">
-              PNG, JPG ou WEBP. A imagem será enviada direto para o Supabase Storage.
+              PNG, JPG ou WEBP. A imagem sera enviada direto para o Supabase Storage.
             </p>
           </div>
           <span className="rounded-full bg-card px-3 py-1 text-xs text-muted-foreground shadow-sm">
@@ -310,7 +310,7 @@ export function EventForm({ event }: EventFormProps) {
           {isSubmitting 
             ? 'Salvando...' 
             : event 
-              ? 'Salvar Alterações'
+              ? 'Salvar Alteracoes' 
               : 'Criar Evento'}
         </Button>
         
@@ -332,7 +332,7 @@ export function EventForm({ event }: EventFormProps) {
             className="rounded-full sm:ml-auto"
           >
             <Trash2 className="size-4" />
-            {isDeleting ? 'Excluindo...' : 'Excluir evento'}
+            {isDeleting ? 'Excluindo...' : 'Excluir Evento'}
           </Button>
         )}
       </div>

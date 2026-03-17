@@ -22,9 +22,9 @@ export default function CibeleBarsantePage() {
                   <span className="block text-[#e8c9b0]">É um movimento de cura, acolhimento e fé.</span>
                 </h1>
                 <p className="max-w-2xl text-lg leading-8 text-white/78">
-                  Permita-se viver essa experiência. Uma caminhada que nasce do cuidado,
+                  Permita-se viver essa experiencia. Uma caminhada que nasce do cuidado,
                   da escuta e da coragem de reunir mulheres para viverem um dia de cada vez,
-                  com profundidade, direção e esperança.
+                  com profundidade, direcao e esperanca.
                 </p>
               </div>
 
@@ -36,9 +36,9 @@ export default function CibeleBarsantePage() {
                   </p>
                 </div>
                 <div className="rounded-[1.8rem] border border-white/12 bg-white/8 p-5 backdrop-blur">
-                  <p className="text-xs uppercase tracking-[0.28em] text-white/60">Fé</p>
+                  <p className="text-xs uppercase tracking-[0.28em] text-white/60">Fe</p>
                   <p className="mt-3 text-sm leading-7 text-white/82">
-                    Confiança em Deus como fonte de direção, cura e sustento em cada fase.
+                    Confianca em Deus como fonte de direcao, cura e sustento em cada fase.
                   </p>
                 </div>
                 <div className="rounded-[1.8rem] border border-white/12 bg-white/8 p-5 backdrop-blur">
@@ -74,16 +74,16 @@ export default function CibeleBarsantePage() {
             </div>
 
             <div className="space-y-6">
-              <p className="text-sm uppercase tracking-[0.4em] text-primary/70">Visão</p>
+              <p className="text-sm uppercase tracking-[0.4em] text-primary/70">Visao</p>
               <h2 className="font-serif text-3xl leading-tight text-foreground md:text-5xl">
-                Proporcionar às mulheres um ambiente de acolhimento, fé e crescimento espiritual.
+                Proporcionar para mulheres um ambiente de acolhimento, fé e crescimento espiritual.
               </h2>
               <p className="text-lg leading-8 text-muted-foreground">
                 Encorajar mulheres a alcançarem os objetivos de suas vidas e tornar cada encontro
-                uma referência por seu impacto emocional e espiritual.
+                uma referência pelo seu impacto emocional e espiritual.
               </p>
               <p className="leading-8 text-foreground/80">
-                A mensagem que conduz esse movimento é simples, mas firme: nós, mulheres, podemos
+                A mensagem que conduz esse movimento é simples, mas firme: nós mulheres podemos
                 chegar no topo vivendo um dia de cada vez, respeitando nossas fases, nossas
                 estações e o processo que Deus construiu para cada história.
               </p>
@@ -109,9 +109,9 @@ export default function CibeleBarsantePage() {
         <section className="px-4 pb-14 md:px-8 md:pb-20">
           <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <div className="space-y-6 rounded-[2.4rem] border border-border/60 bg-white p-8 shadow-[0_30px_90px_-50px_rgba(0,0,0,0.28)] md:p-10">
-              <p className="text-sm uppercase tracking-[0.4em] text-primary/70">Gratidão</p>
+              <p className="text-sm uppercase tracking-[0.4em] text-primary/70">Gratidao</p>
               <h2 className="font-serif text-3xl leading-tight text-foreground md:text-4xl">
-                Hoje meu coração é só gratidão a Deus.
+                Hoje meu coracao e so gratidao a Deus.
               </h2>
               <p className="leading-8 text-foreground/80">
                 Gratidão por tudo que Ele tem feito, por cada porta aberta, por cada mulher que
@@ -132,7 +132,7 @@ export default function CibeleBarsantePage() {
             <div className="overflow-hidden rounded-[2.4rem] bg-[#ddd0c3] shadow-[0_30px_90px_-48px_rgba(0,0,0,0.4)]">
               <img
                 src="/foto 3.jpeg"
-                alt="Cibele Barsante convidando mulheres para viverem essa experiência"
+                alt="Cibele Barsante convidando mulheres para viverem essa experiencia"
                 className="h-full min-h-[32rem] w-full object-cover object-top"
               />
             </div>

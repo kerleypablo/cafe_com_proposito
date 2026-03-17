@@ -73,7 +73,7 @@ export default async function AdminEventosPage() {
                   <Users className="size-4" />
                   <span>
                     {event.registration_count}
-                    {event.max_participants && ` / ${event.max_participants}`} inscrições
+                    {event.max_participants && ` / ${event.max_participants}`} inscricoes
                   </span>
                 </div>
               </div>
@@ -113,7 +113,7 @@ export default async function AdminEventosPage() {
         <Button asChild className="rounded-full">
           <Link href="/admin/eventos/novo">
             <Plus className="size-4" />
-            Novo evento
+            Novo Evento
           </Link>
         </Button>
       </div>

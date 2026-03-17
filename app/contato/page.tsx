@@ -22,7 +22,7 @@ export default function ContatoPage() {
             <div className="overflow-hidden rounded-[2.2rem] shadow-[0_30px_80px_-44px_rgba(0,0,0,0.38)]">
               <img
                 src="/background.png"
-                alt="Contato Café com Propósito"
+                alt="Contato Cafe com Proposito"
                 className="h-full min-h-[28rem] w-full object-cover"
               />
             </div>

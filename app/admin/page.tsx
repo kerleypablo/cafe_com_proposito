@@ -74,13 +74,13 @@ export default async function AdminDashboardPage() {
 
   const stats = [
     { 
-      label: 'Total de eventos',
+      label: 'Total de Eventos', 
       value: totalEvents || 0, 
       icon: Calendar,
       href: '/admin/eventos'
     },
     { 
-      label: 'Eventos futuros',
+      label: 'Eventos Futuros', 
       value: upcomingEvents || 0, 
       icon: Calendar,
       href: '/admin/eventos'
@@ -92,13 +92,13 @@ export default async function AdminDashboardPage() {
       href: '/admin/participantes'
     },
     { 
-      label: 'Inscrições confirmadas',
+      label: 'Inscricoes Confirmadas', 
       value: totalRegistrations || 0, 
       icon: UserCheck,
       href: '/admin/participantes'
     },
     { 
-      label: 'Novas mensagens',
+      label: 'Novas Mensagens', 
       value: pendingSuggestions || 0, 
       icon: Lightbulb,
       href: '/admin/sugestoes'
@@ -158,7 +158,7 @@ export default async function AdminDashboardPage() {
             </div>
           ) : (
             <p className="py-2 text-center text-muted-foreground">
-              Nenhum aniversariante cadastrado neste mês
+              Nenhum aniversariante cadastrado neste mes
             </p>
           )}
         </CardContent>
@@ -193,7 +193,7 @@ export default async function AdminDashboardPage() {
         <CardHeader>
           <CardTitle className="font-serif text-primary">Participantes por evento</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Evolução de inscritas confirmadas em cada encontro cadastrado.
+            Evolucao de inscritas confirmadas em cada encontro cadastrado.
           </p>
         </CardHeader>
         <CardContent>
@@ -201,7 +201,7 @@ export default async function AdminDashboardPage() {
             <EventsLineChart data={chartData} />
           ) : (
             <p className="py-8 text-center text-muted-foreground">
-              Ainda não há eventos suficientes para montar o gráfico.
+              Ainda nao ha eventos suficientes para montar o grafico.
             </p>
           )}
         </CardContent>
@@ -211,7 +211,7 @@ export default async function AdminDashboardPage() {
         {/* Upcoming Events */}
         <Card>
           <CardHeader>
-            <CardTitle className="font-serif">Próximos eventos</CardTitle>
+            <CardTitle className="font-serif">Próximos Eventos</CardTitle>
           </CardHeader>
           <CardContent>
             {normalizedNextEvents.length > 0 ? (
@@ -238,7 +238,7 @@ export default async function AdminDashboardPage() {
                       </div>
                       <div className="text-right">
                         <p className="font-semibold text-foreground">{registrationCount}</p>
-                        <p className="text-xs text-muted-foreground">inscrições</p>
+                        <p className="text-xs text-muted-foreground">inscricoes</p>
                       </div>
                     </Link>
                   )
@@ -255,7 +255,7 @@ export default async function AdminDashboardPage() {
         {/* Recent Registrations */}
         <Card>
           <CardHeader>
-            <CardTitle className="font-serif">Inscrições recentes</CardTitle>
+            <CardTitle className="font-serif">Inscricoes Recentes</CardTitle>
           </CardHeader>
           <CardContent>
             {recentRegistrations && recentRegistrations.length > 0 ? (
@@ -282,7 +282,7 @@ export default async function AdminDashboardPage() {
               </div>
             ) : (
               <p className="text-muted-foreground text-center py-4">
-                Nenhuma inscrição recente
+                Nenhuma inscricao recente
               </p>
             )}
           </CardContent>

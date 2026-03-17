@@ -25,7 +25,7 @@ export default function SugestoesPage() {
                 Envie sua Sugestão
               </h1>
               <p className="text-muted-foreground">
-                Suas ideias são muito importantes para nós! Sugira temas,
+                Suas ideias são muito importantes para nós! Sugira temas, 
                 atividades ou qualquer coisa que gostaria de ver em nossos encontros.
               </p>
             </div>
