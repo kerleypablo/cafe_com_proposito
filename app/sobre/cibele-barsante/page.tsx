@@ -121,10 +121,27 @@ export default function CibeleBarsantePage() {
                 É essa verdade que sustenta sua jornada e inspira cada passo, cada encontro
                 e cada conexão construída com propósito.
               </p>
+              <div className="space-y-4 rounded-[1.8rem] border border-border/70 bg-[#f8f1ea] p-6">
+                <p className="font-serif text-2xl text-foreground">
+                  Hoje meu coração é só gratidão a Deus.
+                </p>
+                <p className="leading-8 text-foreground/80">
+                  Gratidão por tudo que Ele tem feito, por cada porta aberta, por cada mulher
+                  que chegou e por cada história que tem sido tocada através do Café com
+                  Propósito.
+                </p>
+                <p className="leading-8 text-foreground/80">
+                  O que começou como um pequeno desejo no meu coração se tornou algo muito
+                  maior do que eu imaginei. E eu sei que tudo isso vem das mãos de Deus.
+                </p>
+                <p className="leading-8 text-foreground/80">
+                  Que Ele continue abençoando cada encontro, cada vida e cada propósito que
+                  nasce aqui.
+                </p>
+              </div>
               <div className="rounded-[1.8rem] bg-[#2a1e1a] px-6 py-7 text-white shadow-[0_24px_70px_-40px_rgba(0,0,0,0.55)]">
                 <p className="text-lg leading-8 text-white/88">
-                  Mesmo quando tudo parece incerto, é na presença que encontramos direção,
-                  força e recomeço.
+                  Toda honra e toda glória sejam dadas a Ele.
                 </p>
               </div>
             </div>
