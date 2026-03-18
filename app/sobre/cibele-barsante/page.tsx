@@ -18,11 +18,11 @@ export default function CibeleBarsantePage() {
               <div className="space-y-4">
                 <p className="text-sm uppercase tracking-[0.4em] text-white/70">Cibele Barsante</p>
                 <h1 className="max-w-3xl font-serif text-4xl leading-tight md:text-6xl">
-                  Quem é Cibeli?
+                  Quem é Cibele?
                   <span className="block text-[#e8c9b0]">Uma mulher movida pela fé e guiada por Deus.</span>
                 </h1>
                 <p className="max-w-2xl text-lg leading-8 text-white/78">
-                  Cibeli é uma mulher movida pela fé, guiada por Deus e apaixonada por
+                  Cibele é uma mulher movida pela fé, guiada por Deus e apaixonada por
                   transformar vidas através de conexões verdadeiras. Ela carrega no coração
                   o desejo de ver pessoas restauradas, confiantes e alinhadas com o propósito
                   que o Senhor tem para cada uma.
@@ -77,7 +77,7 @@ export default function CibeleBarsantePage() {
             <div className="space-y-6">
               <p className="text-sm uppercase tracking-[0.4em] text-primary/70">Essência</p>
               <h2 className="font-serif text-3xl leading-tight text-foreground md:text-5xl">
-                Mais do que palavras, Cibeli vive aquilo que acredita.
+                Mais do que palavras, Cibele vive aquilo que acredita.
               </h2>
               <p className="text-lg leading-8 text-muted-foreground">
                 Processos, entrega, crescimento e dependência de Deus fazem parte da sua
