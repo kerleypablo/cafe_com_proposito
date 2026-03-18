@@ -105,9 +105,11 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
                             <p className="font-medium text-foreground truncate">
                               {registration.name}
                             </p>
-                            <p className="text-sm text-muted-foreground truncate">
-                              {registration.email}
-                            </p>
+                            {registration.email && (
+                              <p className="text-sm text-muted-foreground truncate">
+                                {registration.email}
+                              </p>
+                            )}
                             {registration.phone && (
                               <p className="text-sm text-muted-foreground">
                                 {registration.phone}

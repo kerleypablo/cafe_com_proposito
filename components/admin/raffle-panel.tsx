@@ -23,7 +23,7 @@ interface EventOption {
 interface RegistrationOption {
   id: string
   name: string
-  email: string
+  email: string | null
   event_id: string
 }
 

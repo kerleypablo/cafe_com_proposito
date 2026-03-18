@@ -16,7 +16,7 @@ interface RegistrationFormProps {
 interface ParticipantLookup {
   id: string
   name: string
-  email: string
+  email: string | null
   phone: string | null
   birthday?: string | null
   save_data?: boolean | null
@@ -105,10 +105,17 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
     const supabase = createClient()
     const normalizedEmail = normalizeEmail(email)
     const normalizedPhone = normalizePhone(phone)
+
+    if (!normalizedPhone) {
+      setError('Informe seu WhatsApp para continuar.')
+      setIsSubmitting(false)
+      return
+    }
+
     const participantPayload = {
       name: name.trim(),
-      email: normalizedEmail,
-      phone: normalizedPhone || null,
+      email: normalizedEmail || null,
+      phone: normalizedPhone,
       birthday: birthday || null,
       save_data: saveData,
     }
@@ -116,34 +123,49 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
     let participantId: string
     let existingParticipant: ParticipantLookup | null = null
 
-    const { data: participantByEmail } = await supabase
+    const { data: participantByPhone } = await supabase
       .from('participants')
       .select('id, name, email, phone, birthday, save_data')
-      .eq('email', normalizedEmail)
+      .eq('phone', normalizedPhone)
       .maybeSingle()
 
-    if (participantByEmail) {
-      existingParticipant = participantByEmail
-    } else if (normalizedPhone) {
-      const { data: participantByPhone } = await supabase
+    if (participantByPhone) {
+      existingParticipant = participantByPhone
+    } else if (normalizedEmail) {
+      const { data: participantByEmail } = await supabase
         .from('participants')
         .select('id, name, email, phone, birthday, save_data')
-        .eq('phone', normalizedPhone)
+        .eq('email', normalizedEmail)
         .maybeSingle()
 
-      existingParticipant = participantByPhone || null
+      existingParticipant = participantByEmail || null
     }
 
     if (existingParticipant) {
       if (
         existingParticipant.email &&
+        normalizedEmail &&
         existingParticipant.email !== normalizedEmail &&
-        normalizedPhone &&
         existingParticipant.phone === normalizedPhone
       ) {
         setError('Esse telefone já está vinculado a outro cadastro. Use o email já cadastrado ou informe outro número.')
         setIsSubmitting(false)
         return
+      }
+
+      if (normalizedEmail && existingParticipant.email !== normalizedEmail) {
+        const { data: participantWithEmail } = await supabase
+          .from('participants')
+          .select('id')
+          .eq('email', normalizedEmail)
+          .neq('id', existingParticipant.id)
+          .maybeSingle()
+
+        if (participantWithEmail) {
+          setError('Esse email já está vinculado a outro cadastro. Informe outro email ou deixe esse campo em branco.')
+          setIsSubmitting(false)
+          return
+        }
       }
 
       participantId = existingParticipant.id
@@ -186,7 +208,18 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
       .eq('email', normalizedEmail)
       .maybeSingle()
 
-    if (existingRegistration || existingRegistrationByEmail) {
+    const { data: existingRegistrationByPhone } = await supabase
+      .from('registrations')
+      .select('id')
+      .eq('event_id', eventId)
+      .eq('phone', normalizedPhone)
+      .maybeSingle()
+
+    if (
+      existingRegistration ||
+      (normalizedEmail && existingRegistrationByEmail) ||
+      existingRegistrationByPhone
+    ) {
       setError('Você já está inscrita neste evento com esse cadastro.')
       setIsSubmitting(false)
       return
@@ -266,14 +299,13 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="email" className="text-foreground">
-          Email *
+          Email (opcional)
         </Label>
         <Input
           id="email"
           name="email"
           type="email"
           placeholder="seu@email.com"
-          required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           onBlur={() => void prefillParticipant('email', email)}
@@ -283,13 +315,14 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="phone" className="text-foreground">
-          WhatsApp (opcional)
+          Celular *
         </Label>
         <Input
           id="phone"
           name="phone"
           type="tel"
           placeholder="(00) 00000-0000"
+          required
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           onBlur={() => void prefillParticipant('phone', phone)}

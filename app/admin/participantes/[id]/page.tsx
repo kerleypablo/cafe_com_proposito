@@ -62,10 +62,12 @@ export default async function AdminParticipanteDetalhePage({
           <CardTitle className="font-serif text-2xl">{participant.name}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-2 xl:grid-cols-4">
-          <div className="flex items-center gap-2">
-            <Mail className="size-4 shrink-0" />
-            <span className="truncate">{participant.email}</span>
-          </div>
+          {participant.email && (
+            <div className="flex items-center gap-2">
+              <Mail className="size-4 shrink-0" />
+              <span className="truncate">{participant.email}</span>
+            </div>
+          )}
           {participant.phone && (
             <div className="flex items-center gap-2">
               <Phone className="size-4 shrink-0" />

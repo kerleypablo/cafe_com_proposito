@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS participants (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   phone TEXT,
-  email TEXT NOT NULL UNIQUE,
+  email TEXT UNIQUE,
   birthday DATE,
   save_data BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS registrations (
   participant_id UUID REFERENCES participants(id) ON DELETE SET NULL,
   name TEXT NOT NULL,
   phone TEXT,
-  email TEXT NOT NULL,
+  email TEXT,
   status TEXT NOT NULL DEFAULT 'confirmed',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -51,7 +51,15 @@ CREATE TABLE IF NOT EXISTS suggestions (
 CREATE INDEX IF NOT EXISTS idx_events_date ON events(date);
 CREATE INDEX IF NOT EXISTS idx_registrations_event ON registrations(event_id);
 CREATE INDEX IF NOT EXISTS idx_participants_email ON participants(email);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_registrations_unique_event_email ON registrations(event_id, email);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_participants_phone_unique
+  ON participants(phone)
+  WHERE phone IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_registrations_unique_event_email
+  ON registrations(event_id, email)
+  WHERE email IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_registrations_unique_event_phone
+  ON registrations(event_id, phone)
+  WHERE phone IS NOT NULL;
 
 -- Enable RLS on all tables
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;

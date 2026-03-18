@@ -34,7 +34,7 @@ export default async function AdminSorteioPage() {
         registrations={(registrations || []).map((registration) => ({
           id: registration.id,
           name: registration.name,
-          email: registration.email,
+          email: registration.email || null,
           event_id: registration.event_id,
         }))}
       />

@@ -26,7 +26,7 @@ ALTER TABLE participants
   ALTER COLUMN phone DROP NOT NULL;
 
 ALTER TABLE participants
-  ALTER COLUMN email SET NOT NULL;
+  ALTER COLUMN email DROP NOT NULL;
 
 ALTER TABLE participants
   ADD COLUMN IF NOT EXISTS birthday DATE,
@@ -46,13 +46,16 @@ END $$;
 
 DROP INDEX IF EXISTS idx_participants_phone;
 CREATE INDEX IF NOT EXISTS idx_participants_email ON participants(email);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_participants_phone_unique
+  ON participants(phone)
+  WHERE phone IS NOT NULL;
 
 -- REGISTRATIONS
 ALTER TABLE registrations
   ALTER COLUMN phone DROP NOT NULL;
 
 ALTER TABLE registrations
-  ALTER COLUMN email SET NOT NULL;
+  ALTER COLUMN email DROP NOT NULL;
 
 ALTER TABLE registrations
   ADD COLUMN IF NOT EXISTS status TEXT;
@@ -66,7 +69,12 @@ ALTER TABLE registrations
   ALTER COLUMN status SET NOT NULL;
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_registrations_unique_event_email
-  ON registrations(event_id, email);
+  ON registrations(event_id, email)
+  WHERE email IS NOT NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_registrations_unique_event_phone
+  ON registrations(event_id, phone)
+  WHERE phone IS NOT NULL;
 
 -- SUGGESTIONS
 ALTER TABLE suggestions
