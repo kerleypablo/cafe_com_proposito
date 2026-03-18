@@ -18,11 +18,11 @@ export default function CibeleBarsantePage() {
               <div className="space-y-4">
                 <p className="text-sm uppercase tracking-[0.4em] text-white/70">Cibele Barsante</p>
                 <h1 className="max-w-3xl font-serif text-4xl leading-tight md:text-6xl">
-                  Quem é Sibeli?
+                  Quem é Cibeli?
                   <span className="block text-[#e8c9b0]">Uma mulher movida pela fé e guiada por Deus.</span>
                 </h1>
                 <p className="max-w-2xl text-lg leading-8 text-white/78">
-                  Sibeli é uma mulher movida pela fé, guiada por Deus e apaixonada por
+                  Cibeli é uma mulher movida pela fé, guiada por Deus e apaixonada por
                   transformar vidas através de conexões verdadeiras. Ela carrega no coração
                   o desejo de ver pessoas restauradas, confiantes e alinhadas com o propósito
                   que o Senhor tem para cada uma.
@@ -77,7 +77,7 @@ export default function CibeleBarsantePage() {
             <div className="space-y-6">
               <p className="text-sm uppercase tracking-[0.4em] text-primary/70">Essência</p>
               <h2 className="font-serif text-3xl leading-tight text-foreground md:text-5xl">
-                Mais do que palavras, Sibeli vive aquilo que acredita.
+                Mais do que palavras, Cibeli vive aquilo que acredita.
               </h2>
               <p className="text-lg leading-8 text-muted-foreground">
                 Processos, entrega, crescimento e dependência de Deus fazem parte da sua
@@ -114,34 +114,17 @@ export default function CibeleBarsantePage() {
                 Uma história marcada pela presença de Deus.
               </h2>
               <p className="leading-8 text-foreground/80">
-                Sibeli carrega no coração a certeza de que vidas podem ser restauradas,
+                Cibeli carrega no coração a certeza de que vidas podem ser restauradas,
                 fortalecidas e reposicionadas quando encontram direção no Senhor.
               </p>
               <p className="leading-8 text-foreground/80">
                 É essa verdade que sustenta sua jornada e inspira cada passo, cada encontro
                 e cada conexão construída com propósito.
               </p>
-              <div className="space-y-4 rounded-[1.8rem] border border-border/70 bg-[#f8f1ea] p-6">
-                <p className="font-serif text-2xl text-foreground">
-                  Hoje meu coração é só gratidão a Deus.
-                </p>
-                <p className="leading-8 text-foreground/80">
-                  Gratidão por tudo que Ele tem feito, por cada porta aberta, por cada mulher
-                  que chegou e por cada história que tem sido tocada através do Café com
-                  Propósito.
-                </p>
-                <p className="leading-8 text-foreground/80">
-                  O que começou como um pequeno desejo no meu coração se tornou algo muito
-                  maior do que eu imaginei. E eu sei que tudo isso vem das mãos de Deus.
-                </p>
-                <p className="leading-8 text-foreground/80">
-                  Que Ele continue abençoando cada encontro, cada vida e cada propósito que
-                  nasce aqui.
-                </p>
-              </div>
               <div className="rounded-[1.8rem] bg-[#2a1e1a] px-6 py-7 text-white shadow-[0_24px_70px_-40px_rgba(0,0,0,0.55)]">
                 <p className="text-lg leading-8 text-white/88">
-                  Toda honra e toda glória sejam dadas a Ele.
+                  Mesmo quando tudo parece incerto, é na presença que encontramos direção,
+                  força e recomeço.
                 </p>
               </div>
             </div>

@@ -47,7 +47,7 @@ export default async function HomePage() {
                   Café com Propósito
                 </p>
                 <h1 className="font-serif text-4xl leading-[0.98] md:text-6xl">
-                  Encontros com beleza, profundidade e presença real.
+                  Mais que um café um encontro com propósito.
                 </h1>
                 <p className="max-w-xl text-sm leading-7 text-white/82 md:text-base">
                   Um espaço para mulheres que desejam viver conversas significativas, momentos
@@ -136,7 +136,7 @@ export default async function HomePage() {
               <div className="space-y-4">
                 <p className="text-sm uppercase tracking-[0.35em] text-primary/70">Mensagens</p>
                 <h2 className="font-serif text-3xl text-foreground md:text-4xl">
-                  Sugestoes, oracoes e agradecimentos
+                  Sugestões, orações e agradecimentos
                 </h2>
                 <p className="max-w-lg leading-8 text-muted-foreground">
                   Se quiser compartilhar algo com a nossa comunidade, este espaço está aberto para sua mensagem.
