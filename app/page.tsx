@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { CalendarDays, Clock3, MapPin, ArrowDown, ArrowRight } from 'lucide-react'
+import { CalendarDays, Clock3, MapPin, ArrowDown, ArrowRight, Handshake } from 'lucide-react'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { Button } from '@/components/ui/button'
@@ -149,7 +149,28 @@ export default async function HomePage() {
             </div>
 
             <div className="rounded-[2.4rem] bg-[linear-gradient(135deg,#eadbcc_0%,#f6eee4_48%,#efe4d6_100%)] px-4 py-10 shadow-[0_24px_80px_-48px_rgba(0,0,0,0.18)] md:px-8">
-              <SponsorsCarousel sponsors={sponsors || []} />
+              <div className="space-y-8">
+                <SponsorsCarousel sponsors={sponsors || []} />
+
+                <div className="grid gap-5 rounded-[2rem] border border-white/50 bg-white/70 p-5 shadow-[0_18px_55px_-42px_rgba(0,0,0,0.28)] md:grid-cols-[1fr_auto] md:items-center md:p-6">
+                  <div className="space-y-2">
+                    <p className="text-sm uppercase tracking-[0.3em] text-primary/70">Seja parceiro</p>
+                    <h3 className="font-serif text-2xl text-foreground">
+                      Quer divulgar sua marca e apoiar o projeto?
+                    </h3>
+                    <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+                      Abra uma solicitação de parceria e entraremos em contato para conversar sobre apoio, presença e visibilidade da sua empresa.
+                    </p>
+                  </div>
+
+                  <Button asChild className="rounded-full">
+                    <Link href="/parcerias">
+                      Quero ser parceiro
+                      <Handshake className="size-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </section>

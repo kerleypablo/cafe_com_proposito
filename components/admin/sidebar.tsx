@@ -11,6 +11,7 @@ import {
   Lightbulb, 
   Images,
   Handshake,
+  BriefcaseBusiness,
   Gift,
   Settings,
   LogOut,
@@ -28,6 +29,7 @@ const navItems = [
   { href: '/admin/sorteio', label: 'Sorteio', icon: Gift },
   { href: '/admin/participantes', label: 'Participantes', icon: Users },
   { href: '/admin/sugestoes', label: 'Sugestoes', icon: Lightbulb },
+  { href: '/admin/parcerias', label: 'Parcerias', icon: BriefcaseBusiness },
   { href: '/admin/patrocinadores', label: 'Patrocinadores', icon: Handshake },
   { href: '/admin/conta', label: 'Conta', icon: Settings },
 ]

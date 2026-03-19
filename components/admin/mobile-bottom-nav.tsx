@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
+  BriefcaseBusiness,
   Calendar,
   Gift,
   Handshake,
@@ -20,6 +21,7 @@ const items = [
   { href: '/admin/sorteio', label: 'Sorteio', icon: Gift },
   { href: '/admin/participantes', label: 'Partic.', icon: Users },
   { href: '/admin/sugestoes', label: 'Mensagens', icon: Lightbulb },
+  { href: '/admin/parcerias', label: 'Parce.', icon: BriefcaseBusiness },
   { href: '/admin/patrocinadores', label: 'Patroc.', icon: Handshake },
 ]
 
@@ -33,7 +35,7 @@ export function AdminMobileBottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:hidden">
-      <div className="grid grid-cols-7">
+      <div className="grid grid-cols-8">
         {items.map((item) => {
           const Icon = item.icon
           const active = isActive(item.href)

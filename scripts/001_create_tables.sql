@@ -47,6 +47,16 @@ CREATE TABLE IF NOT EXISTS suggestions (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Partnership requests table
+CREATE TABLE IF NOT EXISTS partnership_requests (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  company_name TEXT NOT NULL,
+  contact_phone TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_events_date ON events(date);
 CREATE INDEX IF NOT EXISTS idx_registrations_event ON registrations(event_id);
@@ -66,6 +76,7 @@ ALTER TABLE events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE participants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE registrations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE suggestions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE partnership_requests ENABLE ROW LEVEL SECURITY;
 
 -- Public read policy for published events (anyone can view)
 CREATE POLICY "Anyone can view published events" ON events
@@ -95,6 +106,10 @@ CREATE POLICY "Anyone can view participants" ON participants
 CREATE POLICY "Anyone can create suggestions" ON suggestions
   FOR INSERT WITH CHECK (true);
 
+-- Public insert policy for partnership requests
+CREATE POLICY "Anyone can create partnership requests" ON partnership_requests
+  FOR INSERT WITH CHECK (true);
+
 -- Admin policies (authenticated users)
 CREATE POLICY "Admins can do everything on events" ON events
   FOR ALL USING (auth.role() = 'authenticated');
@@ -106,4 +121,7 @@ CREATE POLICY "Admins can do everything on registrations" ON registrations
   FOR ALL USING (auth.role() = 'authenticated');
 
 CREATE POLICY "Admins can do everything on suggestions" ON suggestions
+  FOR ALL USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Admins can do everything on partnership requests" ON partnership_requests
   FOR ALL USING (auth.role() = 'authenticated');

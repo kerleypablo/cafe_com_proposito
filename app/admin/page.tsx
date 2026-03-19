@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Calendar, Users, UserCheck, Lightbulb, Cake, MessageCircle } from 'lucide-react'
+import { Calendar, Users, UserCheck, Lightbulb, Cake, MessageCircle, BriefcaseBusiness, Phone } from 'lucide-react'
 import Link from 'next/link'
 import { EVENT_SELECT, normalizeEvent } from '@/lib/events'
 import { buildWhatsappLink } from '@/lib/whatsapp'
@@ -22,12 +22,14 @@ export default async function AdminDashboardPage() {
     { count: totalParticipants },
     { count: totalRegistrations },
     { count: pendingSuggestions },
+    { count: pendingPartnershipRequests },
   ] = await Promise.all([
     supabase.from('events').select('*', { count: 'exact', head: true }),
     supabase.from('events').select('*', { count: 'exact', head: true }).gte('date', today),
     supabase.from('participants').select('*', { count: 'exact', head: true }),
     supabase.from('registrations').select('*', { count: 'exact', head: true }).eq('status', 'confirmed'),
     supabase.from('suggestions').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+    supabase.from('partnership_requests').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
   ])
 
   // Get recent registrations
@@ -51,6 +53,13 @@ export default async function AdminDashboardPage() {
     .from('participants')
     .select('id, name, phone, birthday')
     .not('birthday', 'is', null)
+
+  const { data: pendingPartnershipLeads } = await supabase
+    .from('partnership_requests')
+    .select('id, name, company_name, contact_phone, created_at')
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false })
+    .limit(4)
 
   const normalizedNextEvents = nextEvents?.map(normalizeEvent) || []
   const chartData = normalizedNextEvents.map((event) => ({
@@ -102,6 +111,12 @@ export default async function AdminDashboardPage() {
       value: pendingSuggestions || 0, 
       icon: Lightbulb,
       href: '/admin/sugestoes'
+    },
+    {
+      label: 'Novas Parcerias',
+      value: pendingPartnershipRequests || 0,
+      icon: BriefcaseBusiness,
+      href: '/admin/parcerias'
     },
   ]
 
@@ -164,7 +179,7 @@ export default async function AdminDashboardPage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5 lg:gap-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-6 lg:gap-4">
         {stats.map((stat) => {
           const Icon = stat.icon
           return (
@@ -202,6 +217,43 @@ export default async function AdminDashboardPage() {
           ) : (
             <p className="py-8 text-center text-muted-foreground">
               Ainda nao ha eventos suficientes para montar o grafico.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="overflow-hidden border-primary/20 bg-[linear-gradient(135deg,#f6ecdf_0%,#fffaf5_62%,#f4e8d8_100%)]">
+        <CardHeader className="flex flex-row items-center justify-between gap-3">
+          <div>
+            <CardTitle className="font-serif text-primary">Novas solicitações de parceria</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Leads recentes de marcas interessadas em apoiar o projeto.
+            </p>
+          </div>
+          <Link href="/admin/parcerias" className="text-sm text-primary hover:underline">
+            Ver todas
+          </Link>
+        </CardHeader>
+        <CardContent>
+          {pendingPartnershipLeads && pendingPartnershipLeads.length > 0 ? (
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              {pendingPartnershipLeads.map((request) => (
+                <div
+                  key={request.id}
+                  className="rounded-2xl border border-white/60 bg-white/80 p-4 shadow-[0_16px_40px_-28px_rgba(0,0,0,0.25)]"
+                >
+                  <p className="truncate font-medium text-foreground">{request.company_name}</p>
+                  <p className="mt-1 truncate text-sm text-muted-foreground">{request.name}</p>
+                  <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+                    <Phone className="size-4" />
+                    <span>{request.contact_phone}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="py-2 text-center text-muted-foreground">
+              Nenhuma solicitação de parceria pendente no momento
             </p>
           )}
         </CardContent>
