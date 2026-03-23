@@ -65,18 +65,18 @@ export default async function AdminParticipantesPage({
 
       <Card>
         <CardContent className="p-4">
-          <form className="flex flex-col gap-3 sm:flex-row">
+          <form className="min-w-0 flex flex-col gap-3 sm:flex-row">
             <Input
               type="text"
               name="nome"
               placeholder="Filtrar por nome"
               defaultValue={nameFilter}
-              className="h-10"
+              className="h-10 w-full min-w-0 sm:flex-1"
             />
             <select
               name="evento"
               defaultValue={eventFilter}
-              className="h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground"
+              className="h-10 w-full min-w-0 rounded-md border border-input bg-background px-3 text-sm text-foreground sm:flex-1"
             >
               <option value="">Filtrar por evento</option>
               {(eventOptions || []).map((event) => (
@@ -85,7 +85,7 @@ export default async function AdminParticipantesPage({
                 </option>
               ))}
             </select>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2 sm:flex-nowrap">
               <Button type="submit" className="rounded-full">
                 Filtrar
               </Button>
@@ -111,11 +111,11 @@ export default async function AdminParticipantesPage({
             ) || []
 
             return (
-              <Card key={participant.id}>
+              <Card key={participant.id} className="overflow-hidden">
                 <CardContent className="p-3 sm:p-4">
                   <div className="flex items-start gap-3">
                     <div className="min-w-0 flex-1 space-y-3">
-                      <div className="flex items-start justify-between gap-3">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div className="min-w-0">
                           <Link
                             href={`/admin/participantes/${participant.id}`}
@@ -136,7 +136,7 @@ export default async function AdminParticipantesPage({
                           )}
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex shrink-0 items-center justify-end gap-2">
                           {whatsappLink && (
                             <Link
                               href={whatsappLink}
@@ -172,7 +172,8 @@ export default async function AdminParticipantesPage({
                           }) => (
                             <span
                               key={reg.id}
-                              className="rounded-full bg-secondary px-2 py-1 text-[11px] text-secondary-foreground"
+                              className="max-w-full truncate rounded-full bg-secondary px-2 py-1 text-[11px] text-secondary-foreground"
+                              title={reg.events?.title || ''}
                             >
                               {reg.events?.title}
                             </span>
