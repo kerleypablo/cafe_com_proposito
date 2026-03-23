@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { buildWhatsappLink } from '@/lib/whatsapp'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { ParticipantActions } from '@/components/admin/participant-actions'
 
 export const metadata = {
   title: 'Participantes | Admin Café com Propósito',
@@ -147,6 +148,10 @@ export default async function AdminParticipantesPage({
                               <MessageCircle className="size-4" />
                             </Link>
                           )}
+                          <ParticipantActions
+                            participantId={participant.id}
+                            participantName={participant.name}
+                          />
                           <Link
                             href={`/admin/participantes/${participant.id}`}
                             className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-colors hover:bg-secondary/80"
