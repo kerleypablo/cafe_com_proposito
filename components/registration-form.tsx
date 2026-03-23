@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { CheckCircle } from 'lucide-react'
+import { CheckCircle, CircleAlert } from 'lucide-react'
 
 interface RegistrationFormProps {
   eventId: string
@@ -105,6 +105,37 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
     const supabase = createClient()
     const normalizedEmail = normalizeEmail(email)
     const normalizedPhone = normalizePhone(phone)
+
+    const [{ data: eventData, error: eventError }, { count: registrationCount, error: countError }] =
+      await Promise.all([
+        supabase
+          .from('events')
+          .select('max_participants')
+          .eq('id', eventId)
+          .maybeSingle(),
+        supabase
+          .from('registrations')
+          .select('*', { count: 'exact', head: true })
+          .eq('event_id', eventId),
+      ])
+
+    const maxParticipants = eventData?.max_participants ?? null
+    const registrationsReachedLimit =
+      typeof maxParticipants === 'number' &&
+      maxParticipants > 0 &&
+      (registrationCount || 0) >= maxParticipants
+
+    if (eventError || countError || !eventData) {
+      setError('Não foi possível validar as vagas disponíveis. Tente novamente.')
+      setIsSubmitting(false)
+      return
+    }
+
+    if (registrationsReachedLimit || isFull) {
+      setError('As inscrições para este evento já foram encerradas.')
+      setIsSubmitting(false)
+      return
+    }
 
     if (!normalizedPhone) {
       setError('Informe seu WhatsApp para continuar.')
@@ -234,7 +265,7 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
         name: participantPayload.name,
         email: participantPayload.email,
         phone: participantPayload.phone,
-        status: isFull ? 'waitlist' : 'confirmed',
+        status: 'confirmed',
       })
 
     if (registrationError) {
@@ -269,12 +300,24 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
           <CheckCircle className="size-6 text-primary" />
         </div>
         <h3 className="font-serif text-lg font-semibold text-foreground mb-2">
-          {isFull ? 'Você está na lista de espera!' : 'Inscrição confirmada!'}
+          Inscrição confirmada!
         </h3>
         <p className="text-sm text-muted-foreground">
-          {isFull
-            ? 'Entraremos em contato se uma vaga for liberada.'
-            : 'Inscrição realizada com sucesso!'}
+          Inscrição realizada com sucesso!
+        </p>
+      </div>
+    )
+  }
+
+  if (isFull) {
+    return (
+      <div className="rounded-2xl border border-border bg-secondary/30 p-5 text-center">
+        <div className="mb-3 inline-flex size-12 items-center justify-center rounded-full bg-primary/10">
+          <CircleAlert className="size-6 text-primary" />
+        </div>
+        <p className="font-medium text-foreground">Inscrições encerradas.</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Este evento continua visível, mas não aceita novas inscrições.
         </p>
       </div>
     )
@@ -380,16 +423,13 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
         disabled={isSubmitting}
         className="w-full rounded-full"
       >
-        {isSubmitting 
-          ? 'Processando...' 
-          : isFull 
-            ? 'Entrar na lista de espera' 
-            : 'Confirmar inscrição'}
+        {isSubmitting ? 'Processando...' : 'Confirmar inscrição'}
       </Button>
 
       <p className="text-xs text-muted-foreground text-center">
         Ao se inscrever, você concorda em receber comunicações sobre este evento.
       </p>
+
     </form>
   )
 }

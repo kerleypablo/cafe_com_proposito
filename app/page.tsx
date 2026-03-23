@@ -23,6 +23,9 @@ export default async function HomePage() {
         year: 'numeric',
       })
     : null
+  const nextEventIsFull = normalizedNextEvent?.max_participants
+    ? (normalizedNextEvent.registration_count || 0) >= normalizedNextEvent.max_participants
+    : false
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -57,7 +60,11 @@ export default async function HomePage() {
                 <div className="flex flex-wrap gap-3">
                   <Button asChild size="lg" className="rounded-full bg-white text-foreground hover:bg-white/90">
                     <Link href={normalizedNextEvent ? `/eventos/${normalizedNextEvent.id}` : '/eventos'}>
-                      {normalizedNextEvent ? 'Quero me inscrever' : 'Ver eventos'}
+                      {normalizedNextEvent
+                        ? nextEventIsFull
+                          ? 'Inscrições encerradas'
+                          : 'Quero me inscrever'
+                        : 'Ver eventos'}
                       <ArrowRight className="size-4" />
                     </Link>
                   </Button>
@@ -106,7 +113,7 @@ export default async function HomePage() {
 
                     <Button asChild className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
                       <Link href={`/eventos/${normalizedNextEvent.id}`}>
-                        Inscrever-se no próximo evento
+                        {nextEventIsFull ? 'Inscrições encerradas' : 'Inscrever-se no próximo evento'}
                         <ArrowRight className="size-4" />
                       </Link>
                     </Button>

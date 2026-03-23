@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { EVENT_SELECT, normalizeEvent } from '@/lib/events'
 import { buildWhatsappLink } from '@/lib/whatsapp'
+import { RegistrationActions } from '@/components/admin/registration-actions'
 
 interface EditEventPageProps {
   params: Promise<{ id: string }>
@@ -131,6 +132,10 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
                             <span className={`text-xs px-2 py-1 rounded-full shrink-0 ${statusColor}`}>
                               {statusLabel}
                             </span>
+                            <RegistrationActions
+                              registrationId={registration.id}
+                              participantName={registration.name}
+                            />
                           </div>
                         </div>
                       </div>

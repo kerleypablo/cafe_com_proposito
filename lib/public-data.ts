@@ -1,6 +1,7 @@
 import { EVENT_SELECT, normalizeEvent, type AppEvent } from '@/lib/events'
 import { PAST_HIGHLIGHTS_SELECT, type PastHighlight } from '@/lib/past-highlights'
 import { SPONSOR_SELECT, type Sponsor } from '@/lib/sponsors'
+import { createClient } from '@/lib/supabase/server'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -44,6 +45,27 @@ function buildQuery(params: Record<string, string | number | undefined>) {
 
 type RawEvent = Parameters<typeof normalizeEvent>[0]
 
+async function attachRegistrationCounts(events: RawEvent[]) {
+  const supabase = await createClient()
+
+  const withCounts = await Promise.all(
+    events.map(async (event) => {
+      const { count } = await supabase
+        .from('registrations')
+        .select('*', { count: 'exact', head: true })
+        .eq('event_id', event.id)
+        .eq('status', 'confirmed')
+
+      return normalizeEvent({
+        ...event,
+        registrations: [{ count: count || 0 }],
+      })
+    }),
+  )
+
+  return withCounts
+}
+
 export async function getNextPublicEvent() {
   const today = new Date().toISOString().split('T')[0]
   const query = buildQuery({
@@ -55,7 +77,10 @@ export async function getNextPublicEvent() {
   })
 
   const data = await restFetch<RawEvent[]>(`/events?${query}`)
-  return data[0] ? normalizeEvent(data[0]) : null
+  if (!data[0]) return null
+
+  const [eventWithCount] = await attachRegistrationCounts([data[0]])
+  return eventWithCount || null
 }
 
 export async function getPublicEvents() {
@@ -82,8 +107,8 @@ export async function getPublicEvents() {
   ])
 
   return {
-    upcoming: upcoming.map(normalizeEvent),
-    past: past.map(normalizeEvent),
+    upcoming: await attachRegistrationCounts(upcoming),
+    past: await attachRegistrationCounts(past),
   }
 }
 
@@ -96,7 +121,10 @@ export async function getPublicEventById(id: string): Promise<AppEvent | null> {
   })
 
   const data = await restFetch<RawEvent[]>(`/events?${query}`)
-  return data[0] ? normalizeEvent(data[0]) : null
+  if (!data[0]) return null
+
+  const [eventWithCount] = await attachRegistrationCounts([data[0]])
+  return eventWithCount || null
 }
 
 export async function getPublicEventMetaById(id: string) {

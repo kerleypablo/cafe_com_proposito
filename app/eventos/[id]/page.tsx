@@ -122,10 +122,10 @@ export default async function EventPage({ params }: EventPageProps) {
                 ) : (
                   <>
                     <h2 className="font-serif text-xl font-semibold text-foreground mb-4">
-                      {isFull ? 'Lista de Espera' : 'Inscreva-se'}
+                      {isFull ? 'Inscrições Encerradas' : 'Inscreva-se'}
                     </h2>
-                    <RegistrationForm 
-                      eventId={event.id} 
+                    <RegistrationForm
+                      eventId={event.id}
                       isFull={isFull}
                     />
                   </>

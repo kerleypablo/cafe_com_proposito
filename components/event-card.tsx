@@ -91,10 +91,9 @@ export function EventCard({ event }: EventCardProps) {
           asChild 
           variant={isPast ? 'outline' : 'default'}
           className="w-full rounded-full"
-          disabled={isFull}
         >
           <Link href={`/eventos/${event.id}`}>
-            {isFull ? 'Lista de espera' : 'Ver detalhes'}
+            {isFull ? 'Esgotado' : 'Ver detalhes'}
           </Link>
         </Button>
       </CardFooter>
