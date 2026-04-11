@@ -2,11 +2,18 @@
 -- These policies keep the public forms usable, but prevent clients from
 -- inserting arbitrary statuses or obviously malformed payloads.
 
+ALTER TABLE registrations
+  ADD COLUMN IF NOT EXISTS attended BOOLEAN NOT NULL DEFAULT true,
+  ADD COLUMN IF NOT EXISTS attended_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS attendance_status TEXT NOT NULL DEFAULT 'present';
+
 DROP POLICY IF EXISTS "Anyone can create registrations" ON registrations;
 CREATE POLICY "Anyone can create registrations" ON registrations
   FOR INSERT
   WITH CHECK (
     status = 'confirmed'
+    AND attended = true
+    AND attendance_status = 'present'
     AND event_id IS NOT NULL
     AND name IS NOT NULL
     AND length(btrim(name)) BETWEEN 2 AND 160

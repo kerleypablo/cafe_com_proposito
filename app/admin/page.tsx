@@ -20,7 +20,7 @@ export default async function AdminDashboardPage() {
     { count: totalEvents },
     { count: upcomingEvents },
     { count: totalParticipants },
-    { count: totalRegistrations },
+    { count: confirmedRegistrations },
     { count: pendingSuggestions },
     { count: pendingPartnershipRequests },
   ] = await Promise.all([
@@ -49,6 +49,18 @@ export default async function AdminDashboardPage() {
     .order('date', { ascending: true })
     .limit(8)
 
+  const activeRegistrationsByEventResult = await supabase
+    .from('registrations')
+    .select('event_id')
+    .eq('status', 'confirmed')
+    .neq('attendance_status', 'absent')
+  const { data: confirmedRegistrationsByEvent } = activeRegistrationsByEventResult.error
+    ? await supabase
+        .from('registrations')
+        .select('event_id')
+        .eq('status', 'confirmed')
+    : { data: activeRegistrationsByEventResult.data }
+
   const { data: participantsWithBirthday } = await supabase
     .from('participants')
     .select('id, name, phone, birthday')
@@ -62,11 +74,22 @@ export default async function AdminDashboardPage() {
     .limit(4)
 
   const normalizedNextEvents = nextEvents?.map(normalizeEvent) || []
+  const activeRegistrationCountByEvent = new Map<string, number>()
+  ;(confirmedRegistrationsByEvent || []).forEach((registration) => {
+    activeRegistrationCountByEvent.set(
+      registration.event_id,
+      (activeRegistrationCountByEvent.get(registration.event_id) || 0) + 1,
+    )
+  })
+  const activeRegistrationCount = Array.from(activeRegistrationCountByEvent.values()).reduce(
+    (total, count) => total + count,
+    0,
+  )
   const chartData = normalizedNextEvents.map((event) => ({
     id: event.id,
     title: event.title,
     shortTitle: event.title.length > 18 ? `${event.title.slice(0, 18)}...` : event.title,
-    registrations: event.registration_count || 0,
+    registrations: activeRegistrationCountByEvent.get(event.id) || 0,
   }))
   const currentMonth = new Date().getMonth()
   const birthdayPeople = (participantsWithBirthday || [])
@@ -102,7 +125,9 @@ export default async function AdminDashboardPage() {
     },
     { 
       label: 'Inscricoes Confirmadas', 
-      value: totalRegistrations || 0, 
+      value: activeRegistrationsByEventResult.error
+        ? (confirmedRegistrations || 0)
+        : activeRegistrationCount,
       icon: UserCheck,
       href: '/admin/participantes'
     },
@@ -274,7 +299,7 @@ export default async function AdminDashboardPage() {
                     day: 'numeric',
                     month: 'short',
                   })
-                  const registrationCount = event.registration_count || 0
+                  const registrationCount = activeRegistrationCountByEvent.get(event.id) || 0
                   
                   return (
                     <Link 

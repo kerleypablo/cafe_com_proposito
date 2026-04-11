@@ -35,6 +35,10 @@ CREATE TABLE IF NOT EXISTS registrations (
   phone TEXT,
   email TEXT,
   status TEXT NOT NULL DEFAULT 'confirmed',
+  attended BOOLEAN NOT NULL DEFAULT true,
+  attended_at TIMESTAMPTZ,
+  attendance_status TEXT NOT NULL DEFAULT 'present'
+    CHECK (attendance_status IN ('pending', 'present', 'absent')),
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -87,6 +91,8 @@ CREATE POLICY "Anyone can create registrations" ON registrations
   FOR INSERT
   WITH CHECK (
     status = 'confirmed'
+    AND attended = true
+    AND attendance_status = 'present'
     AND event_id IS NOT NULL
     AND name IS NOT NULL
     AND length(btrim(name)) BETWEEN 2 AND 160
