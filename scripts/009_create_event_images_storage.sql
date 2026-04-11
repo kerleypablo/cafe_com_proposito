@@ -2,6 +2,13 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('event-images', 'event-images', true)
 ON CONFLICT (id) DO NOTHING;
 
+UPDATE storage.buckets
+SET
+  public = true,
+  file_size_limit = 5242880,
+  allowed_mime_types = ARRAY['image/png', 'image/jpeg', 'image/webp']
+WHERE id = 'event-images';
+
 DROP POLICY IF EXISTS "Public can view event images" ON storage.objects;
 CREATE POLICY "Public can view event images"
 ON storage.objects

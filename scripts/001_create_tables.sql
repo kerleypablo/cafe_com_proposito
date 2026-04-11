@@ -84,7 +84,19 @@ CREATE POLICY "Anyone can view published events" ON events
 
 -- Public insert policy for registrations (anyone can register)
 CREATE POLICY "Anyone can create registrations" ON registrations
-  FOR INSERT WITH CHECK (true);
+  FOR INSERT
+  WITH CHECK (
+    status = 'confirmed'
+    AND event_id IS NOT NULL
+    AND name IS NOT NULL
+    AND length(btrim(name)) BETWEEN 2 AND 160
+    AND phone IS NOT NULL
+    AND length(regexp_replace(phone, '\D', '', 'g')) BETWEEN 10 AND 15
+    AND (
+      email IS NULL
+      OR email ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$'
+    )
+  );
 
 -- Public read policy for registrations (for counting)
 CREATE POLICY "Anyone can view registrations" ON registrations
@@ -104,11 +116,29 @@ CREATE POLICY "Anyone can view participants" ON participants
 
 -- Public insert policy for suggestions (anyone can send)
 CREATE POLICY "Anyone can create suggestions" ON suggestions
-  FOR INSERT WITH CHECK (true);
+  FOR INSERT
+  WITH CHECK (
+    status = 'pending'
+    AND suggestion IS NOT NULL
+    AND length(btrim(suggestion)) BETWEEN 2 AND 3000
+    AND (
+      name IS NULL
+      OR length(btrim(name)) BETWEEN 1 AND 120
+    )
+  );
 
 -- Public insert policy for partnership requests
 CREATE POLICY "Anyone can create partnership requests" ON partnership_requests
-  FOR INSERT WITH CHECK (true);
+  FOR INSERT
+  WITH CHECK (
+    status = 'pending'
+    AND name IS NOT NULL
+    AND length(btrim(name)) BETWEEN 2 AND 160
+    AND company_name IS NOT NULL
+    AND length(btrim(company_name)) BETWEEN 2 AND 180
+    AND contact_phone IS NOT NULL
+    AND length(regexp_replace(contact_phone, '\D', '', 'g')) BETWEEN 10 AND 15
+  );
 
 -- Admin policies (authenticated users)
 CREATE POLICY "Admins can do everything on events" ON events
