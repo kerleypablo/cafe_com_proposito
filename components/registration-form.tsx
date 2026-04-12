@@ -44,15 +44,16 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
   const [saveData, setSaveData] = useState(false)
   const [isLoadingExistingData, setIsLoadingExistingData] = useState(false)
   const hydratedRef = useRef(false)
+  const submitLockRef = useRef(false)
 
   useEffect(() => {
     if (hydratedRef.current) return
     hydratedRef.current = true
 
-    const stored = window.localStorage.getItem(STORAGE_KEY)
-    if (!stored) return
-
     try {
+      const stored = window.localStorage.getItem(STORAGE_KEY)
+      if (!stored) return
+
       const parsed = JSON.parse(stored)
       setName(parsed.name || '')
       setEmail(parsed.email || '')
@@ -60,7 +61,11 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
       setBirthday(parsed.birthday || '')
       setSaveData(Boolean(parsed.saveData))
     } catch {
-      window.localStorage.removeItem(STORAGE_KEY)
+      try {
+        window.localStorage.removeItem(STORAGE_KEY)
+      } catch {
+        // Some mobile in-app browsers block localStorage. Registration still works without it.
+      }
     }
   }, [])
 
@@ -99,12 +104,22 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+
+    if (submitLockRef.current) return
+
+    submitLockRef.current = true
     setIsSubmitting(true)
     setError(null)
 
     const supabase = createClient()
     const normalizedEmail = normalizeEmail(email)
     const normalizedPhone = normalizePhone(phone)
+
+    const finishWithError = (message: string) => {
+      setError(message)
+      setIsSubmitting(false)
+      submitLockRef.current = false
+    }
 
     const [{ data: eventData, error: eventError }, { count: registrationCount, error: countError }] =
       await Promise.all([
@@ -126,20 +141,17 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
       (registrationCount || 0) >= maxParticipants
 
     if (eventError || countError || !eventData) {
-      setError('Não foi possível validar as vagas disponíveis. Tente novamente.')
-      setIsSubmitting(false)
+      finishWithError('Não foi possível validar as vagas disponíveis. Tente novamente.')
       return
     }
 
     if (registrationsReachedLimit || isFull) {
-      setError('As inscrições para este evento já foram encerradas.')
-      setIsSubmitting(false)
+      finishWithError('As inscrições para este evento já foram encerradas.')
       return
     }
 
     if (!normalizedPhone) {
-      setError('Informe seu WhatsApp para continuar.')
-      setIsSubmitting(false)
+      finishWithError('Informe seu WhatsApp para continuar.')
       return
     }
 
@@ -179,8 +191,7 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
         existingParticipant.email !== normalizedEmail &&
         existingParticipant.phone === normalizedPhone
       ) {
-        setError('Esse telefone já está vinculado a outro cadastro. Use o email já cadastrado ou informe outro número.')
-        setIsSubmitting(false)
+        finishWithError('Esse telefone já está vinculado a outro cadastro. Use o email já cadastrado ou informe outro número.')
         return
       }
 
@@ -193,8 +204,7 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
           .maybeSingle()
 
         if (participantWithEmail) {
-          setError('Esse email já está vinculado a outro cadastro. Informe outro email ou deixe esse campo em branco.')
-          setIsSubmitting(false)
+          finishWithError('Esse email já está vinculado a outro cadastro. Informe outro email ou deixe esse campo em branco.')
           return
         }
       }
@@ -206,8 +216,7 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
         .eq('id', participantId)
 
       if (updateParticipantError) {
-        setError('Não foi possível atualizar seus dados. Tente novamente.')
-        setIsSubmitting(false)
+        finishWithError('Não foi possível atualizar seus dados. Tente novamente.')
         return
       }
     } else {
@@ -218,11 +227,21 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
         .single()
 
       if (participantError || !newParticipant) {
-        setError('Erro ao processar inscrição. Tente novamente.')
-        setIsSubmitting(false)
-        return
+        const { data: participantCreatedInParallel } = await supabase
+          .from('participants')
+          .select('id')
+          .eq('phone', normalizedPhone)
+          .maybeSingle()
+
+        if (!participantCreatedInParallel) {
+          finishWithError('Erro ao processar inscrição. Tente novamente.')
+          return
+        }
+
+        participantId = participantCreatedInParallel.id
+      } else {
+        participantId = newParticipant.id
       }
-      participantId = newParticipant.id
     }
 
     const { data: existingRegistration } = await supabase
@@ -232,12 +251,16 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
       .eq('participant_id', participantId)
       .maybeSingle()
 
-    const { data: existingRegistrationByEmail } = await supabase
-      .from('registrations')
-      .select('id')
-      .eq('event_id', eventId)
-      .eq('email', normalizedEmail)
-      .maybeSingle()
+    const existingRegistrationByEmail = normalizedEmail
+      ? (
+        await supabase
+          .from('registrations')
+          .select('id')
+          .eq('event_id', eventId)
+          .eq('email', normalizedEmail)
+          .maybeSingle()
+      ).data
+      : null
 
     const { data: existingRegistrationByPhone } = await supabase
       .from('registrations')
@@ -248,11 +271,10 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
 
     if (
       existingRegistration ||
-      (normalizedEmail && existingRegistrationByEmail) ||
+      existingRegistrationByEmail ||
       existingRegistrationByPhone
     ) {
-      setError('Você já está inscrita neste evento com esse cadastro.')
-      setIsSubmitting(false)
+      finishWithError('Você já está inscrita neste evento com esse cadastro.')
       return
     }
 
@@ -266,27 +288,36 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
         email: participantPayload.email,
         phone: participantPayload.phone,
         status: 'confirmed',
+        attended: true,
+        attendance_status: 'present',
       })
 
     if (registrationError) {
-      setError('Erro ao processar inscrição. Tente novamente.')
-      setIsSubmitting(false)
+      if (registrationError.code === '23505') {
+        finishWithError('Você já está inscrita neste evento com esse cadastro.')
+      } else {
+        finishWithError('Erro ao processar inscrição. Tente novamente.')
+      }
       return
     }
 
-    if (saveData) {
-      window.localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({
-          name: participantPayload.name,
-          email: participantPayload.email,
-          phone: participantPayload.phone || '',
-          birthday: participantPayload.birthday || '',
-          saveData,
-        }),
-      )
-    } else {
-      window.localStorage.removeItem(STORAGE_KEY)
+    try {
+      if (saveData) {
+        window.localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            name: participantPayload.name,
+            email: participantPayload.email,
+            phone: participantPayload.phone || '',
+            birthday: participantPayload.birthday || '',
+            saveData,
+          }),
+        )
+      } else {
+        window.localStorage.removeItem(STORAGE_KEY)
+      }
+    } catch {
+      // Ignore storage failures in private or embedded mobile browsers.
     }
 
     setIsSuccess(true)
