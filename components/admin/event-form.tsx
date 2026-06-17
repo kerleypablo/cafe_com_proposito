@@ -34,6 +34,12 @@ export function EventForm({ event }: EventFormProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const bucketName = 'event-images'
+  const allowedImageTypes = ['image/png', 'image/jpeg', 'image/webp']
+  const extensionByMimeType: Record<string, string> = {
+    'image/png': 'png',
+    'image/jpeg': 'jpg',
+    'image/webp': 'webp',
+  }
 
   function getStoragePathFromUrl(url: string) {
     const marker = `/storage/v1/object/public/${bucketName}/`
@@ -44,13 +50,18 @@ export function EventForm({ event }: EventFormProps) {
 
   async function uploadImage(file: File) {
     const supabase = createClient()
-    const extension = file.name.split('.').pop() || 'jpg'
+    if (!allowedImageTypes.includes(file.type)) {
+      throw new Error('Formato de imagem invalido. Use PNG, JPG ou WEBP.')
+    }
+
+    const extension = extensionByMimeType[file.type] || 'jpg'
     const path = `eventos/${crypto.randomUUID()}.${extension}`
 
     const { error: uploadError } = await supabase.storage
       .from(bucketName)
       .upload(path, file, {
         cacheControl: '3600',
+        contentType: file.type,
         upsert: false,
       })
 
@@ -59,7 +70,10 @@ export function EventForm({ event }: EventFormProps) {
     }
 
     const { data } = supabase.storage.from(bucketName).getPublicUrl(path)
-    return data.publicUrl
+    return {
+      path,
+      publicUrl: data.publicUrl,
+    }
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -70,12 +84,21 @@ export function EventForm({ event }: EventFormProps) {
     const formData = new FormData(e.currentTarget)
     const isPublished = (formData.get('status') as string) === 'published'
     let imageUrl = event?.image_url || null
+    let uploadedImagePath: string | null = null
 
     if (selectedFile) {
       try {
-        imageUrl = await uploadImage(selectedFile)
-      } catch {
-        setError('Nao foi possivel enviar a imagem do evento.')
+        const uploadedImage = await uploadImage(selectedFile)
+        imageUrl = uploadedImage.publicUrl
+        uploadedImagePath = uploadedImage.path
+      } catch (uploadError) {
+        const message = uploadError instanceof Error ? uploadError.message : 'Erro desconhecido'
+        console.error('Erro ao enviar imagem do evento:', uploadError)
+        setError(
+          message === 'Bucket not found'
+            ? 'Bucket event-images nao encontrado no Supabase. Crie o bucket antes de enviar imagens.'
+            : `Nao foi possivel enviar a imagem do evento. ${message}`,
+        )
         setIsSubmitting(false)
         return
       }
@@ -96,6 +119,7 @@ export function EventForm({ event }: EventFormProps) {
     }
 
     const supabase = createClient()
+    let saveError = null
 
     if (event) {
       // Update existing event
@@ -104,21 +128,30 @@ export function EventForm({ event }: EventFormProps) {
         .update(data)
         .eq('id', event.id)
 
-      if (updateError) {
-        setError('Erro ao atualizar evento. Tente novamente.')
-        setIsSubmitting(false)
-        return
-      }
+      saveError = updateError
     } else {
       // Create new event
       const { error: insertError } = await supabase
         .from('events')
         .insert(data)
 
-      if (insertError) {
-        setError('Erro ao criar evento. Tente novamente.')
-        setIsSubmitting(false)
-        return
+      saveError = insertError
+    }
+
+    if (saveError) {
+      if (uploadedImagePath) {
+        await supabase.storage.from(bucketName).remove([uploadedImagePath])
+      }
+
+      setError(event ? 'Erro ao atualizar evento. Tente novamente.' : 'Erro ao criar evento. Tente novamente.')
+      setIsSubmitting(false)
+      return
+    }
+
+    if (event && selectedFile && event.image_url) {
+      const previousImagePath = getStoragePathFromUrl(event.image_url)
+      if (previousImagePath && previousImagePath !== uploadedImagePath) {
+        await supabase.storage.from(bucketName).remove([previousImagePath])
       }
     }
 

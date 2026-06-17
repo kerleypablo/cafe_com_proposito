@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent } from '@/components/ui/card'
-import { Cake, ChevronRight, MessageCircle } from 'lucide-react'
+import { Cake, ChevronRight, MessageCircle, UserCheck, UserX } from 'lucide-react'
 import Link from 'next/link'
 import { buildWhatsappLink } from '@/lib/whatsapp'
 import { Input } from '@/components/ui/input'
@@ -34,6 +34,8 @@ export default async function AdminParticipantesPage({
         id,
         event_id,
         status,
+        attended,
+        attendance_status,
         events:event_id(title, date)
       )
     `)
@@ -106,9 +108,33 @@ export default async function AdminParticipantesPage({
             const activeRegistrations = participant.registrations?.filter(
               (registration: {
                 status: string
-                events: { title: string; date: string } | null
-              }) => registration.status === 'confirmed' && registration.events?.date >= today
+                events: { title?: string; date?: string } | null
+              }) => registration.status === 'confirmed' && (registration.events?.date || '') >= today
             ) || []
+            const attendanceStats = (participant.registrations || []).reduce(
+              (
+                stats: { presences: number; absences: number },
+                registration: {
+                  status: string
+                  attended?: boolean | null
+                  attendance_status?: 'pending' | 'present' | 'absent' | null
+                  events: { date?: string } | null
+                },
+              ) => {
+                if (registration.status !== 'confirmed') return stats
+                const eventDate = registration.events?.date
+                if (!eventDate || eventDate >= today) return stats
+
+                if (registration.attendance_status === 'present' || registration.attended) {
+                  stats.presences += 1
+                } else if (registration.attendance_status === 'absent') {
+                  stats.absences += 1
+                }
+
+                return stats
+              },
+              { presences: 0, absences: 0 },
+            )
 
             return (
               <Card key={participant.id} className="overflow-hidden">
@@ -163,12 +189,20 @@ export default async function AdminParticipantesPage({
                       </div>
 
                       <div className="flex flex-wrap gap-2">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-[11px] text-primary">
+                          <UserCheck className="size-3" />
+                          {attendanceStats.presences} presenca{attendanceStats.presences === 1 ? '' : 's'}
+                        </span>
+                        <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2 py-1 text-[11px] text-destructive">
+                          <UserX className="size-3" />
+                          {attendanceStats.absences} falta{attendanceStats.absences === 1 ? '' : 's'}
+                        </span>
                         {activeRegistrations.length > 0 ? (
                           activeRegistrations.slice(0, 3).map((reg: {
                             id: string
                             status: string
                             event_id: string
-                            events: { title: string; date: string } | null
+                            events: { title?: string; date?: string } | null
                           }) => (
                             <span
                               key={reg.id}
