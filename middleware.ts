@@ -38,12 +38,16 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   const isAdminRoute = pathname.startsWith('/admin')
   const isLoginRoute = pathname === '/admin/login'
+  const isPublicAdminAuthRoute =
+    pathname === '/admin/login' ||
+    pathname === '/admin/esqueci-senha' ||
+    pathname === '/admin/atualizar-senha'
 
   if (!isAdminRoute) {
     return response
   }
 
-  if (!user && !isLoginRoute) {
+  if (!user && !isPublicAdminAuthRoute) {
     const loginUrl = request.nextUrl.clone()
     loginUrl.pathname = '/admin/login'
     return NextResponse.redirect(loginUrl)

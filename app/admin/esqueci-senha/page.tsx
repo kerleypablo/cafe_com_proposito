@@ -1,42 +1,41 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Coffee, Lock } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Coffee, Lock } from 'lucide-react'
-import Link from 'next/link'
 
-export default function AdminLoginPage() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+export default function ForgotPasswordPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setIsLoading(true)
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setIsSubmitting(true)
     setError(null)
+    setSuccess(null)
 
-    const formData = new FormData(e.currentTarget)
-    const email = formData.get('email') as string
-    const password = formData.get('password') as string
+    const formData = new FormData(event.currentTarget)
+    const email = String(formData.get('email') || '').trim()
 
     const supabase = createClient()
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    const redirectTo = `${window.location.origin}/admin/atualizar-senha`
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo,
     })
 
-    if (signInError) {
-      setError('Email ou senha incorretos.')
-      setIsLoading(false)
+    if (resetError) {
+      setError(resetError.message || 'Nao foi possivel enviar o email de recuperacao.')
+      setIsSubmitting(false)
       return
     }
 
-    router.push('/admin')
-    router.refresh()
+    setSuccess('Se o email existir, voce recebera um link para redefinir a senha.')
+    setIsSubmitting(false)
   }
 
   return (
@@ -49,10 +48,10 @@ export default function AdminLoginPage() {
             </div>
           </Link>
           <h1 className="font-serif text-2xl font-bold text-foreground mb-2">
-            Area Administrativa
+            Recuperar senha
           </h1>
           <p className="text-sm text-muted-foreground">
-            Acesso restrito para organizadores
+            Informe seu email para receber o link de redefinicao
           </p>
         </div>
 
@@ -74,44 +73,18 @@ export default function AdminLoginPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Sua senha"
-                required
-                className="rounded-xl"
-              />
-            </div>
+            {error && <p className="text-sm text-destructive">{error}</p>}
+            {success && <p className="text-sm text-primary">{success}</p>}
 
-            {error && (
-              <p className="text-sm text-destructive">{error}</p>
-            )}
-
-            <div className="text-right">
-              <Link
-                href="/admin/esqueci-senha"
-                className="text-sm text-primary hover:underline underline-offset-4"
-              >
-                Esqueci minha senha
-              </Link>
-            </div>
-
-            <Button 
-              type="submit" 
-              disabled={isLoading}
-              className="w-full rounded-full"
-            >
-              {isLoading ? 'Entrando...' : 'Entrar'}
+            <Button type="submit" disabled={isSubmitting} className="w-full rounded-full">
+              {isSubmitting ? 'Enviando...' : 'Enviar link de recuperacao'}
             </Button>
           </form>
         </div>
 
         <p className="text-center text-sm text-muted-foreground mt-6">
-          <Link href="/" className="hover:text-foreground transition-colors">
-            Voltar para o site
+          <Link href="/admin/login" className="hover:text-foreground transition-colors">
+            Voltar para o login
           </Link>
         </p>
       </div>
