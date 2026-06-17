@@ -15,7 +15,7 @@ export default async function AdminContaPage() {
       <div>
         <h1 className="font-serif text-3xl font-bold text-primary">Conta</h1>
         <p className="text-muted-foreground">
-          Atualize a senha da sua conta administrativa.
+          Atualize a sua senha ou redefina a senha de outro usuario administrativo.
         </p>
       </div>
 
