@@ -5,6 +5,12 @@ CREATE TABLE IF NOT EXISTS events (
   title TEXT NOT NULL,
   description TEXT,
   image_url TEXT,
+  is_paid BOOLEAN NOT NULL DEFAULT false,
+  payment_amount NUMERIC(10,2),
+  payment_pix_key TEXT,
+  payment_instructions TEXT,
+  payment_qr_code_url TEXT,
+  payment_whatsapp TEXT,
   date DATE NOT NULL,
   time TIME NOT NULL,
   location TEXT NOT NULL,
@@ -35,6 +41,8 @@ CREATE TABLE IF NOT EXISTS registrations (
   phone TEXT,
   email TEXT,
   status TEXT NOT NULL DEFAULT 'confirmed',
+  payment_confirmed BOOLEAN,
+  payment_confirmed_at TIMESTAMPTZ,
   attended BOOLEAN NOT NULL DEFAULT true,
   attended_at TIMESTAMPTZ,
   attendance_status TEXT NOT NULL DEFAULT 'present'
@@ -91,6 +99,8 @@ CREATE POLICY "Anyone can create registrations" ON registrations
   FOR INSERT
   WITH CHECK (
     status = 'confirmed'
+    AND (payment_confirmed IS NULL OR payment_confirmed = false)
+    AND payment_confirmed_at IS NULL
     AND attended = true
     AND attendance_status = 'present'
     AND event_id IS NOT NULL

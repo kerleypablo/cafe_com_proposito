@@ -3,6 +3,12 @@ interface EventRecord {
   title: string
   description: string | null
   image_url: string | null
+  is_paid: boolean | null
+  payment_amount: number | null
+  payment_pix_key: string | null
+  payment_instructions: string | null
+  payment_qr_code_url: string | null
+  payment_whatsapp: string | null
   date: string
   time: string
   location: string
@@ -18,6 +24,12 @@ export interface AppEvent {
   title: string
   description: string | null
   image_url: string | null
+  is_paid: boolean
+  payment_amount: number | null
+  payment_pix_key: string | null
+  payment_instructions: string | null
+  payment_qr_code_url: string | null
+  payment_whatsapp: string | null
   date: string
   time: string
   location: string
@@ -35,6 +47,12 @@ export const EVENT_SELECT = `
   title,
   description,
   image_url,
+  is_paid,
+  payment_amount,
+  payment_pix_key,
+  payment_instructions,
+  payment_qr_code_url,
+  payment_whatsapp,
   date,
   time,
   location,
@@ -48,6 +66,7 @@ export const EVENT_SELECT = `
 export function normalizeEvent(event: EventRecord): AppEvent {
   return {
     ...event,
+    is_paid: Boolean(event.is_paid),
     status: event.is_published ? 'published' : 'draft',
     registration_count: event.registrations?.[0]?.count || 0,
   }

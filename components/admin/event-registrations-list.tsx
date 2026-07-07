@@ -6,6 +6,7 @@ import { MessageCircle } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { buildWhatsappLink } from '@/lib/whatsapp'
 import { AttendanceToggleButton } from '@/components/admin/attendance-toggle-button'
+import { PaymentToggleButton } from '@/components/admin/payment-toggle-button'
 import { RegistrationActions } from '@/components/admin/registration-actions'
 
 type AttendanceStatus = 'pending' | 'present' | 'absent'
@@ -20,6 +21,7 @@ interface EventRegistration {
   status: string
   attended: boolean
   attendance_status: AttendanceStatus
+  payment_confirmed: boolean | null
   created_at: string | null
 }
 
@@ -27,6 +29,7 @@ interface EventRegistrationsListProps {
   registrations: EventRegistration[]
   attendanceColumnsAvailable: boolean
   absenceCounts: Record<string, number>
+  isPaidEvent: boolean
 }
 
 function normalizeSearchValue(value: string) {
@@ -41,6 +44,7 @@ export function EventRegistrationsList({
   registrations,
   attendanceColumnsAvailable,
   absenceCounts,
+  isPaidEvent,
 }: EventRegistrationsListProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const normalizedSearchTerm = normalizeSearchValue(searchTerm)
@@ -110,6 +114,15 @@ export function EventRegistrationsList({
                       </p>
                     )}
                     <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
+                      {isPaidEvent && (
+                        <span className={`rounded-full px-2 py-1 ${
+                          registration.payment_confirmed
+                            ? 'bg-emerald-100 text-emerald-700'
+                            : 'bg-amber-100 text-amber-700'
+                        }`}>
+                          {registration.payment_confirmed ? 'Pagamento confirmado' : 'Pagamento pendente'}
+                        </span>
+                      )}
                       <span className={`rounded-full px-2 py-1 ${
                         !attendanceColumnsAvailable
                           ? 'bg-muted text-muted-foreground'
@@ -152,15 +165,22 @@ export function EventRegistrationsList({
                   </div>
                 </div>
 
-                {attendanceColumnsAvailable && registration.status === 'confirmed' && (
-                  <div className="absolute bottom-3 right-3">
+                <div className="absolute bottom-3 right-3 flex flex-wrap justify-end gap-2">
+                  {isPaidEvent && (
+                    <PaymentToggleButton
+                      registrationId={registration.id}
+                      participantName={registration.name}
+                      paymentConfirmed={registration.payment_confirmed === true}
+                    />
+                  )}
+                  {attendanceColumnsAvailable && registration.status === 'confirmed' && (
                     <AttendanceToggleButton
                       registrationId={registration.id}
                       participantName={registration.name}
                       attendanceStatus={registration.attendance_status}
                     />
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             )
           })}

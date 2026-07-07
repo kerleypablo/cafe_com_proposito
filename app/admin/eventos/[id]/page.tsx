@@ -14,6 +14,13 @@ interface EditEventPageProps {
 
 type AttendanceStatus = 'pending' | 'present' | 'absent'
 
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value)
+}
+
 export async function generateMetadata({ params }: EditEventPageProps) {
   const { id } = await params
   const supabase = await createClient()
@@ -46,7 +53,7 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
 
   const registrationResult = await supabase
     .from('registrations')
-    .select('id, event_id, participant_id, name, email, phone, status, attended, attended_at, attendance_status, created_at')
+    .select('id, event_id, participant_id, name, email, phone, status, attended, attended_at, attendance_status, payment_confirmed, created_at')
     .eq('event_id', id)
     .order('created_at', { ascending: false })
 
@@ -54,7 +61,7 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
   const fallbackRegistrationResult = registrationResult.error
     ? await supabase
         .from('registrations')
-        .select('id, event_id, participant_id, name, email, phone, status, created_at')
+        .select('id, event_id, participant_id, name, email, phone, status, payment_confirmed, created_at')
         .eq('event_id', id)
         .order('created_at', { ascending: false })
     : { data: null }
@@ -71,8 +78,13 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
     attendance_status: 'attendance_status' in registration
       ? (registration.attendance_status as AttendanceStatus)
       : 'present',
+    payment_confirmed: 'payment_confirmed' in registration ? registration.payment_confirmed : null,
     created_at: registration.created_at || null,
   }))
+  const paidRegistrationsCount = registrations.filter((registration) => registration.payment_confirmed === true).length
+  const totalRaised = event.is_paid && event.payment_amount !== null
+    ? paidRegistrationsCount * event.payment_amount
+    : 0
 
   const today = new Date().toISOString().split('T')[0]
   const participantIds = Array.from(
@@ -127,24 +139,30 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
         </div>
 
         <div className="lg:col-span-1">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 font-serif">
-                <Users className="size-5" />
-                Inscricoes ({registrations.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <EventRegistrationsList
-                registrations={registrations}
-                attendanceColumnsAvailable={attendanceColumnsAvailable}
-                absenceCounts={Object.fromEntries(absenceCountByParticipant)}
-              />
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 font-serif">
+                  <Users className="size-5" />
+                  Inscricoes ({registrations.length})
+                </CardTitle>
+                {event.is_paid && (
+                  <div className="space-y-1 text-sm text-muted-foreground">
+                    <p>{paidRegistrationsCount} pagamento{paidRegistrationsCount === 1 ? '' : 's'} confirmado{paidRegistrationsCount === 1 ? '' : 's'}</p>
+                    <p className="font-medium text-foreground">Valor arrecadado: {formatCurrency(totalRaised)}</p>
+                  </div>
+                )}
+              </CardHeader>
+              <CardContent>
+                <EventRegistrationsList
+                  registrations={registrations}
+                  attendanceColumnsAvailable={attendanceColumnsAvailable}
+                  absenceCounts={Object.fromEntries(absenceCountByParticipant)}
+                  isPaidEvent={event.is_paid}
+                />
+              </CardContent>
+            </Card>
         </div>
       </div>
     </div>
   )
 }
-

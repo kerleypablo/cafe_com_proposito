@@ -126,7 +126,13 @@ export default async function EventPage({ params }: EventPageProps) {
                     </h2>
                     <RegistrationForm
                       eventId={event.id}
+                      eventTitle={event.title}
                       isFull={isFull}
+                      isPaid={event.is_paid}
+                      paymentAmount={event.payment_amount}
+                      paymentInstructions={event.payment_instructions}
+                      paymentQrCodeUrl={event.payment_qr_code_url}
+                      paymentWhatsapp={event.payment_whatsapp}
                     />
                   </>
                 )}

@@ -6,6 +6,13 @@ import Link from 'next/link'
 import { EVENT_SELECT, normalizeEvent } from '@/lib/events'
 import { CopyEventLinkButton } from '@/components/admin/copy-event-link-button'
 
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value)
+}
+
 export const metadata = {
   title: 'Eventos | Admin Café com Propósito',
 }
@@ -13,12 +20,25 @@ export const metadata = {
 export default async function AdminEventosPage() {
   const supabase = await createClient()
 
-  const { data: events } = await supabase
-    .from('events')
-    .select(EVENT_SELECT)
-    .order('date', { ascending: false })
+  const [{ data: events }, { data: paidRegistrations }] = await Promise.all([
+    supabase
+      .from('events')
+      .select(EVENT_SELECT)
+      .order('date', { ascending: false }),
+    supabase
+      .from('registrations')
+      .select('event_id')
+      .eq('payment_confirmed', true),
+  ])
 
   const eventsWithCount = events?.map(normalizeEvent) || []
+  const paidRegistrationsCountByEvent = new Map<string, number>()
+  ;(paidRegistrations || []).forEach((registration) => {
+    paidRegistrationsCountByEvent.set(
+      registration.event_id,
+      (paidRegistrationsCountByEvent.get(registration.event_id) || 0) + 1,
+    )
+  })
 
   const today = new Date().toISOString().split('T')[0]
   const upcomingEvents = eventsWithCount.filter((event) => event.date >= today)
@@ -35,6 +55,10 @@ export default async function AdminEventosPage() {
     const statusColor = event.status === 'published'
       ? 'bg-primary/10 text-primary'
       : 'bg-muted text-muted-foreground'
+    const paidRegistrationsCount = paidRegistrationsCountByEvent.get(event.id) || 0
+    const totalRaised = event.is_paid && event.payment_amount !== null
+      ? paidRegistrationsCount * event.payment_amount
+      : 0
 
     return (
       <Card key={event.id} className={isPastSection ? 'opacity-65 saturate-75' : ''}>
@@ -76,7 +100,20 @@ export default async function AdminEventosPage() {
                     {event.max_participants && ` / ${event.max_participants}`} inscricoes
                   </span>
                 </div>
+                {event.is_paid && event.payment_amount !== null && (
+                  <div className="flex items-center gap-1">
+                    <span>
+                      Evento pago • {formatCurrency(event.payment_amount)}
+                    </span>
+                  </div>
+                )}
               </div>
+
+              {event.is_paid && event.payment_amount !== null && (
+                <p className="mt-3 text-sm font-medium text-foreground">
+                  Arrecadado: {formatCurrency(totalRaised)} ({paidRegistrationsCount} pago{paidRegistrationsCount === 1 ? '' : 's'})
+                </p>
+              )}
             </div>
 
             <div className="flex shrink-0 items-center gap-2">

@@ -1,16 +1,24 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { buildWhatsappLink } from '@/lib/whatsapp'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { CheckCircle, CircleAlert } from 'lucide-react'
+import { CheckCircle, CircleAlert, MessageCircle } from 'lucide-react'
 
 interface RegistrationFormProps {
   eventId: string
+  eventTitle: string
   isFull: boolean
+  isPaid: boolean
+  paymentAmount: number | null
+  paymentInstructions: string | null
+  paymentQrCodeUrl: string | null
+  paymentWhatsapp: string | null
 }
 
 interface ParticipantLookup {
@@ -21,6 +29,8 @@ interface ParticipantLookup {
   birthday?: string | null
   save_data?: boolean | null
 }
+
+type RegistrationStep = 'form' | 'payment'
 
 const STORAGE_KEY = 'cafe_com_proposito_participant'
 
@@ -33,9 +43,27 @@ function normalizePhone(value: string) {
   return digits || ''
 }
 
-export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
+function formatCurrency(value: number | null) {
+  if (typeof value !== 'number' || Number.isNaN(value)) return null
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value)
+}
+
+export function RegistrationForm({
+  eventId,
+  eventTitle,
+  isFull,
+  isPaid,
+  paymentAmount,
+  paymentInstructions,
+  paymentQrCodeUrl,
+  paymentWhatsapp,
+}: RegistrationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [currentStep, setCurrentStep] = useState<RegistrationStep>('form')
   const [error, setError] = useState<string | null>(null)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -45,6 +73,9 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
   const [isLoadingExistingData, setIsLoadingExistingData] = useState(false)
   const hydratedRef = useRef(false)
   const submitLockRef = useRef(false)
+
+  const formattedPaymentAmount = formatCurrency(paymentAmount)
+  const paymentWhatsappLink = buildWhatsappLink(paymentWhatsapp)
 
   useEffect(() => {
     if (hydratedRef.current) return
@@ -95,10 +126,10 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
 
     if (lookupError || !data) return
 
-    setName(current => current || data.name || '')
-    setEmail(current => current || data.email || '')
-    setPhone(current => current || data.phone || '')
-    setBirthday(current => current || data.birthday || '')
+    setName((current) => current || data.name || '')
+    setEmail((current) => current || data.email || '')
+    setPhone((current) => current || data.phone || '')
+    setBirthday((current) => current || data.birthday || '')
     setSaveData(Boolean(data.save_data))
   }
 
@@ -125,7 +156,7 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
       await Promise.all([
         supabase
           .from('events')
-          .select('max_participants')
+          .select('max_participants, is_paid')
           .eq('id', eventId)
           .maybeSingle(),
         supabase
@@ -278,7 +309,8 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
       return
     }
 
-    // Create registration
+    const eventIsPaid = Boolean(eventData.is_paid)
+
     const { error: registrationError } = await supabase
       .from('registrations')
       .insert({
@@ -290,6 +322,7 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
         status: 'confirmed',
         attended: true,
         attendance_status: 'present',
+        payment_confirmed: eventIsPaid ? false : null,
       })
 
     if (registrationError) {
@@ -320,17 +353,23 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
       // Ignore storage failures in private or embedded mobile browsers.
     }
 
-    setIsSuccess(true)
+    if (eventIsPaid) {
+      setCurrentStep('payment')
+    } else {
+      setIsSuccess(true)
+    }
+
     setIsSubmitting(false)
+    submitLockRef.current = false
   }
 
   if (isSuccess) {
     return (
-      <div className="text-center py-4">
-        <div className="inline-flex items-center justify-center size-12 rounded-full bg-primary/10 mb-3">
+      <div className="py-4 text-center">
+        <div className="mb-3 inline-flex size-12 items-center justify-center rounded-full bg-primary/10">
           <CheckCircle className="size-6 text-primary" />
         </div>
-        <h3 className="font-serif text-lg font-semibold text-foreground mb-2">
+        <h3 className="mb-2 font-serif text-lg font-semibold text-foreground">
           Inscrição confirmada!
         </h3>
         <p className="text-sm text-muted-foreground">
@@ -354,113 +393,186 @@ export function RegistrationForm({ eventId, isFull }: RegistrationFormProps) {
     )
   }
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="name" className="text-foreground">
-          Nome completo *
-        </Label>
-        <Input
-          id="name"
-          name="name"
-          placeholder="Seu nome"
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="rounded-xl"
-        />
-      </div>
+  if (currentStep === 'payment') {
+    return (
+      <div className="space-y-4">
+        <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
+          <h3 className="font-serif text-lg font-semibold text-foreground">
+            Inscrição recebida
+          </h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Sua vaga em {eventTitle} foi registrada. Agora finalize o pagamento e envie o comprovante para concluir a confirmação.
+          </p>
+        </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="email" className="text-foreground">
-          Email (opcional)
-        </Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="seu@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          onBlur={() => void prefillParticipant('email', email)}
-          className="rounded-xl"
-        />
-      </div>
+        {formattedPaymentAmount && (
+          <div className="rounded-2xl border border-border bg-secondary/20 p-4 text-center">
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Valor</p>
+            <p className="mt-2 font-serif text-3xl text-primary">{formattedPaymentAmount}</p>
+          </div>
+        )}
 
-      <div className="space-y-2">
-        <Label htmlFor="phone" className="text-foreground">
-          Celular *
-        </Label>
-        <Input
-          id="phone"
-          name="phone"
-          type="tel"
-          placeholder="(00) 00000-0000"
-          required
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          onBlur={() => void prefillParticipant('phone', phone)}
-          className="rounded-xl"
-        />
-      </div>
+        {paymentInstructions && (
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <p className="text-sm whitespace-pre-wrap text-foreground">{paymentInstructions}</p>
+          </div>
+        )}
 
-      <div className="space-y-2">
-        <Label htmlFor="birthday" className="text-foreground">
-          Data de aniversário (opcional)
-        </Label>
-        <Input
-          id="birthday"
-          name="birthday"
-          type="date"
-          value={birthday}
-          onChange={(e) => setBirthday(e.target.value)}
-          className="rounded-xl"
-        />
-        <p className="text-xs text-muted-foreground">
-          Se você quiser, podemos usar essa informação para mensagens especiais, como aniversário.
+        {paymentQrCodeUrl && (
+          <div className="overflow-hidden rounded-2xl border border-border bg-card p-4">
+            <img src={paymentQrCodeUrl} alt="QR code para pagamento do evento" className="mx-auto h-auto w-full max-w-xs object-contain" />
+          </div>
+        )}
+
+        {formattedPaymentAmount && (
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <p className="text-sm font-medium text-foreground">Valor a pagar</p>
+            <p className="mt-1 text-sm text-muted-foreground">{formattedPaymentAmount}</p>
+          </div>
+        )}
+
+        {paymentWhatsappLink && (
+          <Button asChild className="w-full rounded-full">
+            <Link href={paymentWhatsappLink} target="_blank" rel="noreferrer">
+              <MessageCircle className="size-4" />
+              Enviar comprovante pelo WhatsApp
+            </Link>
+          </Button>
+        )}
+
+        <p className="text-center text-xs text-muted-foreground">
+          Assim que o comprovante for conferido, a administradora marcará seu pagamento como confirmado.
         </p>
       </div>
+    )
+  }
 
-      <div className="space-y-3 rounded-2xl border border-border bg-secondary/20 p-4">
-        <div className="flex items-start gap-3">
-          <Checkbox
-            id="save_data"
-            checked={saveData}
-            onCheckedChange={(checked) => setSaveData(checked === true)}
-          />
-          <div className="space-y-1">
-            <Label htmlFor="save_data" className="text-foreground">
-              Salvar meus dados para próximas inscrições
-            </Label>
-            <p className="text-xs text-muted-foreground">
-              Assim você não precisa preencher tudo de novo quando participar de outros encontros.
+  return (
+    <div className="space-y-4">
+      {isPaid && (
+        <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
+          <p className="text-sm font-medium text-foreground">Este é um evento pago.</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {paymentInstructions || 'Depois de preencher seus dados, você verá as instruções de pagamento e o QR code para enviar o comprovante.'}
+          </p>
+          {formattedPaymentAmount && (
+            <p className="mt-3 text-sm font-semibold text-primary">
+              Valor da inscrição: {formattedPaymentAmount}
             </p>
+          )}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="name" className="text-foreground">
+            Nome completo *
+          </Label>
+          <Input
+            id="name"
+            name="name"
+            placeholder="Seu nome"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="rounded-xl"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-foreground">
+            Email (opcional)
+          </Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="seu@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onBlur={() => void prefillParticipant('email', email)}
+            className="rounded-xl"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="phone" className="text-foreground">
+            Celular *
+          </Label>
+          <Input
+            id="phone"
+            name="phone"
+            type="tel"
+            placeholder="(00) 00000-0000"
+            required
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            onBlur={() => void prefillParticipant('phone', phone)}
+            className="rounded-xl"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="birthday" className="text-foreground">
+            Data de aniversário (opcional)
+          </Label>
+          <Input
+            id="birthday"
+            name="birthday"
+            type="date"
+            value={birthday}
+            onChange={(e) => setBirthday(e.target.value)}
+            className="rounded-xl"
+          />
+          <p className="text-xs text-muted-foreground">
+            Se você quiser, podemos usar essa informação para mensagens especiais, como aniversário.
+          </p>
+        </div>
+
+        <div className="space-y-3 rounded-2xl border border-border bg-secondary/20 p-4">
+          <div className="flex items-start gap-3">
+            <Checkbox
+              id="save_data"
+              checked={saveData}
+              onCheckedChange={(checked) => setSaveData(checked === true)}
+            />
+            <div className="space-y-1">
+              <Label htmlFor="save_data" className="text-foreground">
+                Salvar meus dados para próximas inscrições
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                Assim você não precisa preencher tudo de novo quando participar de outros encontros.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {isLoadingExistingData && (
-        <p className="text-xs text-muted-foreground">
-          Verificando se já existe um cadastro com esses dados...
+        {isLoadingExistingData && (
+          <p className="text-xs text-muted-foreground">
+            Verificando se já existe um cadastro com esses dados...
+          </p>
+        )}
+
+        {error && (
+          <p className="text-sm text-destructive">{error}</p>
+        )}
+
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full rounded-full"
+        >
+          {isSubmitting
+            ? 'Processando...'
+            : isPaid
+              ? 'Continuar para pagamento'
+              : 'Confirmar inscrição'}
+        </Button>
+
+        <p className="text-center text-xs text-muted-foreground">
+          Ao se inscrever, você concorda em receber comunicações sobre este evento.
         </p>
-      )}
-
-      {error && (
-        <p className="text-sm text-destructive">{error}</p>
-      )}
-
-      <Button 
-        type="submit" 
-        disabled={isSubmitting}
-        className="w-full rounded-full"
-      >
-        {isSubmitting ? 'Processando...' : 'Confirmar inscrição'}
-      </Button>
-
-      <p className="text-xs text-muted-foreground text-center">
-        Ao se inscrever, você concorda em receber comunicações sobre este evento.
-      </p>
-
-    </form>
+      </form>
+    </div>
   )
 }
