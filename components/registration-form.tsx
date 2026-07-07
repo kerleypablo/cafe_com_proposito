@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { CheckCircle, CircleAlert, MessageCircle } from 'lucide-react'
+import { CheckCircle, CircleAlert, Copy, MessageCircle } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface RegistrationFormProps {
   eventId: string
@@ -16,6 +17,7 @@ interface RegistrationFormProps {
   isFull: boolean
   isPaid: boolean
   paymentAmount: number | null
+  paymentPixKey: string | null
   paymentInstructions: string | null
   paymentQrCodeUrl: string | null
   paymentWhatsapp: string | null
@@ -57,6 +59,7 @@ export function RegistrationForm({
   isFull,
   isPaid,
   paymentAmount,
+  paymentPixKey,
   paymentInstructions,
   paymentQrCodeUrl,
   paymentWhatsapp,
@@ -76,6 +79,17 @@ export function RegistrationForm({
 
   const formattedPaymentAmount = formatCurrency(paymentAmount)
   const paymentWhatsappLink = buildWhatsappLink(paymentWhatsapp)
+
+  async function handleCopyPixCode() {
+    if (!paymentPixKey) return
+
+    try {
+      await navigator.clipboard.writeText(paymentPixKey)
+      toast.success('Codigo Pix copiado.')
+    } catch {
+      toast.error('Nao foi possivel copiar o codigo Pix.')
+    }
+  }
 
   useEffect(() => {
     if (hydratedRef.current) return
@@ -421,6 +435,24 @@ export function RegistrationForm({
         {paymentQrCodeUrl && (
           <div className="overflow-hidden rounded-2xl border border-border bg-card p-4">
             <img src={paymentQrCodeUrl} alt="QR code para pagamento do evento" className="mx-auto h-auto w-full max-w-xs object-contain" />
+          </div>
+        )}
+
+        {paymentPixKey && (
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <p className="text-sm font-medium text-foreground">Codigo Pix</p>
+            <p className="mt-2 break-all rounded-xl bg-secondary/30 p-3 text-sm text-muted-foreground">
+              {paymentPixKey}
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-3 w-full rounded-full"
+              onClick={() => void handleCopyPixCode()}
+            >
+              <Copy className="size-4" />
+              Copiar codigo Pix
+            </Button>
           </div>
         )}
 

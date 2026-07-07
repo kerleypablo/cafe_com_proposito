@@ -130,6 +130,7 @@ export default async function EventPage({ params }: EventPageProps) {
                       isFull={isFull}
                       isPaid={event.is_paid}
                       paymentAmount={event.payment_amount}
+                      paymentPixKey={event.payment_pix_key}
                       paymentInstructions={event.payment_instructions}
                       paymentQrCodeUrl={event.payment_qr_code_url}
                       paymentWhatsapp={event.payment_whatsapp}
