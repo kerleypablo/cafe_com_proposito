@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Playfair_Display, Lato } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Toaster } from '@/components/ui/sonner'
 import '@splidejs/react-splide/css'
 import './globals.css'
 
@@ -46,6 +47,7 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${playfair.variable} ${lato.variable}`}>
       <body className="min-h-screen overflow-x-hidden font-sans antialiased">
         {children}
+        <Toaster position="top-right" richColors />
         <Analytics />
       </body>
     </html>

@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { ImagePlus, Trash2 } from 'lucide-react'
 import { revalidatePaths } from '@/lib/revalidate-client'
+import { toast } from 'sonner'
 
 interface EventFormProps {
   event?: {
@@ -42,6 +43,8 @@ export function EventForm({ event }: EventFormProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [selectedPaymentFile, setSelectedPaymentFile] = useState<File | null>(null)
   const [isPaid, setIsPaid] = useState(Boolean(event?.is_paid))
+  const [removeEventImage, setRemoveEventImage] = useState(false)
+  const [removePaymentImage, setRemovePaymentImage] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
   const paymentInputRef = useRef<HTMLInputElement | null>(null)
   const bucketName = 'event-images'
@@ -57,6 +60,34 @@ export function EventForm({ event }: EventFormProps) {
     const index = url.indexOf(marker)
     if (index === -1) return null
     return url.slice(index + marker.length)
+  }
+
+  function getRequiredFieldMessage(formData: FormData) {
+    const title = (formData.get('title') as string)?.trim()
+    const status = (formData.get('status') as string)?.trim()
+    const date = (formData.get('date') as string)?.trim()
+    const time = (formData.get('time') as string)?.trim()
+    const location = (formData.get('location') as string)?.trim()
+    const paymentWhatsapp = (formData.get('payment_whatsapp') as string)?.trim()
+    const paymentPixKey = (formData.get('payment_pix_key') as string)?.trim()
+    const paymentInstructions = (formData.get('payment_instructions') as string)?.trim()
+    const paymentAmountValue = (formData.get('payment_amount') as string)?.trim()
+
+    if (!title) return 'Preencha o titulo do evento.'
+    if (!status) return 'Selecione o status do evento.'
+    if (!date) return 'Preencha a data do evento.'
+    if (!time) return 'Preencha o horario do evento.'
+    if (!location) return 'Preencha o local do evento.'
+
+    if (isPaid) {
+      if (!paymentAmountValue) return 'Preencha o valor do evento pago.'
+      if (!paymentWhatsapp) return 'Preencha o WhatsApp para envio do comprovante.'
+      if (!paymentPixKey) return 'Preencha a chave Pix.'
+      if (!paymentInstructions) return 'Preencha o texto informativo do pagamento.'
+      if (!selectedPaymentFile && !paymentPreviewUrl) return 'Envie a imagem do QR code para eventos pagos.'
+    }
+
+    return null
   }
 
   async function uploadImage(file: File, folder: 'eventos' | 'pagamentos') {
@@ -93,9 +124,18 @@ export function EventForm({ event }: EventFormProps) {
     setError(null)
 
     const formData = new FormData(e.currentTarget)
+    const requiredFieldMessage = getRequiredFieldMessage(formData)
+
+    if (requiredFieldMessage) {
+      setError(requiredFieldMessage)
+      toast.error(requiredFieldMessage)
+      setIsSubmitting(false)
+      return
+    }
+
     const isPublished = (formData.get('status') as string) === 'published'
-    let imageUrl = event?.image_url || null
-    let paymentQrCodeUrl = event?.payment_qr_code_url || null
+    let imageUrl = removeEventImage ? null : (event?.image_url || null)
+    let paymentQrCodeUrl = removePaymentImage ? null : (event?.payment_qr_code_url || null)
     let uploadedImagePath: string | null = null
     let uploadedPaymentImagePath: string | null = null
     const paymentAmountValue = formData.get('payment_amount') as string
@@ -103,13 +143,17 @@ export function EventForm({ event }: EventFormProps) {
 
     if (isPaid) {
       if (normalizedPaymentAmount === null || Number.isNaN(normalizedPaymentAmount) || normalizedPaymentAmount < 0) {
-        setError('Informe um valor valido para o evento pago.')
+        const message = 'Informe um valor valido para o evento pago.'
+        setError(message)
+        toast.error(message)
         setIsSubmitting(false)
         return
       }
 
       if (!selectedPaymentFile && !paymentQrCodeUrl) {
-        setError('Envie a imagem do QR code para eventos pagos.')
+        const message = 'Envie a imagem do QR code para eventos pagos.'
+        setError(message)
+        toast.error(message)
         setIsSubmitting(false)
         return
       }
@@ -123,11 +167,14 @@ export function EventForm({ event }: EventFormProps) {
       } catch (uploadError) {
         const message = uploadError instanceof Error ? uploadError.message : 'Erro desconhecido'
         console.error('Erro ao enviar imagem do evento:', uploadError)
-        setError(
+        const messageText =
           message === 'Bucket not found'
             ? 'Bucket event-images nao encontrado no Supabase. Crie o bucket antes de enviar imagens.'
-            : `Nao foi possivel enviar a imagem do evento. ${message}`,
+            : `Nao foi possivel enviar a imagem do evento. ${message}`
+        setError(
+          messageText,
         )
+        toast.error(messageText)
         setIsSubmitting(false)
         return
       }
@@ -141,11 +188,14 @@ export function EventForm({ event }: EventFormProps) {
       } catch (uploadError) {
         const message = uploadError instanceof Error ? uploadError.message : 'Erro desconhecido'
         console.error('Erro ao enviar QR code do evento:', uploadError)
-        setError(
+        const messageText =
           message === 'Bucket not found'
             ? 'Bucket event-images nao encontrado no Supabase. Crie o bucket antes de enviar imagens.'
-            : `Nao foi possivel enviar o QR code do pagamento. ${message}`,
+            : `Nao foi possivel enviar o QR code do pagamento. ${message}`
+        setError(
+          messageText,
         )
+        toast.error(messageText)
         setIsSubmitting(false)
         return
       }
@@ -199,7 +249,9 @@ export function EventForm({ event }: EventFormProps) {
         await supabase.storage.from(bucketName).remove([uploadedPaymentImagePath])
       }
 
-      setError(event ? 'Erro ao atualizar evento. Tente novamente.' : 'Erro ao criar evento. Tente novamente.')
+      const message = event ? 'Erro ao atualizar evento. Tente novamente.' : 'Erro ao criar evento. Tente novamente.'
+      setError(message)
+      toast.error(message)
       setIsSubmitting(false)
       return
     }
@@ -207,6 +259,13 @@ export function EventForm({ event }: EventFormProps) {
     if (event && selectedFile && event.image_url) {
       const previousImagePath = getStoragePathFromUrl(event.image_url)
       if (previousImagePath && previousImagePath !== uploadedImagePath) {
+        await supabase.storage.from(bucketName).remove([previousImagePath])
+      }
+    }
+
+    if (event && removeEventImage && !selectedFile && event.image_url) {
+      const previousImagePath = getStoragePathFromUrl(event.image_url)
+      if (previousImagePath) {
         await supabase.storage.from(bucketName).remove([previousImagePath])
       }
     }
@@ -231,6 +290,7 @@ export function EventForm({ event }: EventFormProps) {
       ...(event ? [`/eventos/${event.id}`] : []),
     ])
 
+    toast.success(event ? 'Evento atualizado com sucesso.' : 'Evento criado com sucesso.')
     router.push('/admin/eventos')
     router.refresh()
   }
@@ -273,7 +333,7 @@ export function EventForm({ event }: EventFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} noValidate className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <Label htmlFor="title">Titulo do Evento *</Label>
@@ -470,6 +530,7 @@ export function EventForm({ event }: EventFormProps) {
                 onChange={(inputEvent) => {
                   const file = inputEvent.target.files?.[0] || null
                   setSelectedPaymentFile(file)
+                  setRemovePaymentImage(false)
                   setPaymentPreviewUrl(file ? URL.createObjectURL(file) : event?.payment_qr_code_url || null)
                   if (paymentInputRef.current) paymentInputRef.current.value = ''
                 }}
@@ -477,6 +538,22 @@ export function EventForm({ event }: EventFormProps) {
               {paymentPreviewUrl && (
                 <div className="overflow-hidden rounded-2xl border border-border bg-card p-4">
                   <img src={paymentPreviewUrl} alt="Preview do QR code" className="mx-auto h-56 w-auto max-w-full object-contain" />
+                  <div className="mt-4 flex justify-end">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="rounded-full"
+                      onClick={() => {
+                        setSelectedPaymentFile(null)
+                        setPaymentPreviewUrl(null)
+                        setRemovePaymentImage(Boolean(event?.payment_qr_code_url))
+                        if (paymentInputRef.current) paymentInputRef.current.value = ''
+                      }}
+                    >
+                      <Trash2 className="size-4" />
+                      Excluir imagem
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -512,6 +589,7 @@ export function EventForm({ event }: EventFormProps) {
           onChange={(inputEvent) => {
             const file = inputEvent.target.files?.[0] || null
             setSelectedFile(file)
+            setRemoveEventImage(false)
             setPreviewUrl(file ? URL.createObjectURL(file) : event?.image_url || null)
             if (inputRef.current) inputRef.current.value = ''
           }}
@@ -519,6 +597,22 @@ export function EventForm({ event }: EventFormProps) {
         {previewUrl && (
           <div className="overflow-hidden rounded-2xl border border-border bg-card p-4">
             <img src={previewUrl} alt={event?.title || 'Preview do evento'} className="h-40 w-full object-cover" />
+            <div className="mt-4 flex justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-full"
+                onClick={() => {
+                  setSelectedFile(null)
+                  setPreviewUrl(null)
+                  setRemoveEventImage(Boolean(event?.image_url))
+                  if (inputRef.current) inputRef.current.value = ''
+                }}
+              >
+                <Trash2 className="size-4" />
+                Excluir imagem
+              </Button>
+            </div>
           </div>
         )}
       </div>
