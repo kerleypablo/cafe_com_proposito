@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import { createClient } from '@/lib/supabase/client'
 
 interface EventOption {
   id: string
@@ -25,18 +26,28 @@ interface RegistrationOption {
   name: string
   email: string | null
   event_id: string
+  participant_id: string | null
+}
+
+interface RaffleResult {
+  registration_id: string
+  event_id: string
+  participant_id: string | null
+  outcome: 'won' | 'absent'
 }
 
 interface RafflePanelProps {
   events: EventOption[]
   registrations: RegistrationOption[]
+  results: RaffleResult[]
+  historyError: boolean
 }
 
 type Mode = 'participant' | 'number'
 
 const CONFETTI_COLORS = ['#d98b58', '#d46f7d', '#d1a84e', '#7ea28d', '#b87443']
 
-export function RafflePanel({ events, registrations }: RafflePanelProps) {
+export function RafflePanel({ events, registrations, results: initialResults, historyError }: RafflePanelProps) {
   const [mode, setMode] = useState<Mode>('participant')
   const [selectedEventId, setSelectedEventId] = useState(events[0]?.id ?? '')
   const [maxNumber, setMaxNumber] = useState('100')
@@ -45,11 +56,20 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
   const [isRolling, setIsRolling] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
   const [wheelRotation, setWheelRotation] = useState(0)
+  const [results, setResults] = useState(initialResults)
+  const [pending, setPending] = useState<RegistrationOption | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   const registrationsForEvent = useMemo(
     () => registrations.filter((registration) => registration.event_id === selectedEventId),
     [registrations, selectedEventId],
   )
+  const eligible = useMemo(() => registrationsForEvent.filter((registration) =>
+    !results.some((result) => result.event_id === selectedEventId &&
+      (result.registration_id === registration.id ||
+        (registration.participant_id && result.participant_id === registration.participant_id)))
+  ), [registrationsForEvent, results, selectedEventId])
 
   useEffect(() => {
     if (!showConfetti) return
@@ -58,7 +78,7 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
     return () => clearTimeout(timeout)
   }, [showConfetti])
 
-  async function runRollingAnimation(values: string[], onFinish: (finalValue: string) => void) {
+  async function runRollingAnimation(values: string[], finalValue: string, onFinish: () => void) {
     setIsRolling(true)
     setWinner(null)
     setShowConfetti(false)
@@ -77,32 +97,57 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
       await new Promise((resolve) => setTimeout(resolve, interval))
     }
 
-    const finalValue = values[Math.floor(Math.random() * values.length)]
     setRollingLabel(finalValue)
-    onFinish(finalValue)
+    onFinish()
     setShowConfetti(true)
     setIsRolling(false)
   }
 
-  async function handleParticipantRaffle() {
-    if (registrationsForEvent.length === 0) return
+  function randomFraction() {
+    const value = new Uint32Array(1)
+    crypto.getRandomValues(value)
+    return value[0] / 0x100000000
+  }
 
-    const labels = registrationsForEvent.map((registration) => registration.name)
-    await runRollingAnimation(labels, (finalName) => {
-      const selected = registrationsForEvent.find((registration) => registration.name === finalName)
-      setWinner({
-        title: finalName,
-        subtitle: selected?.email || 'Participante sorteada',
-      })
+  async function handleParticipantRaffle() {
+    if (!eligible.length || pending || historyError) return
+    const weighted = eligible.map((registration) => {
+      const wins = registration.participant_id
+        ? results.filter((result) => result.outcome === 'won' && result.participant_id === registration.participant_id).length
+        : results.filter((result) => result.outcome === 'won' && result.registration_id === registration.id).length
+      return { registration, weight: Math.max(0.5, 1 - wins * 0.1) }
     })
+    let ticket = randomFraction() * weighted.reduce((sum, item) => sum + item.weight, 0)
+    const selected = weighted.find((item) => (ticket -= item.weight) < 0)?.registration ?? weighted[weighted.length - 1].registration
+    await runRollingAnimation(eligible.map((registration) => registration.name), selected.name, () => {
+      setPending(selected)
+      setWinner({ title: selected.name, subtitle: selected.email || 'Participante sorteada' })
+    })
+  }
+
+  async function recordOutcome(outcome: 'won' | 'absent') {
+    if (!pending || saving) return
+    setSaving(true)
+    setError('')
+    const result: RaffleResult = { registration_id: pending.id, event_id: pending.event_id, participant_id: pending.participant_id, outcome }
+    const { error: saveError } = await createClient().from('raffle_results').insert(result)
+    if (saveError) {
+      setError('Não foi possível salvar o resultado. Confira a conexão e tente novamente.')
+    } else {
+      setResults((current) => [...current, result])
+      setPending(null)
+      setWinner({ title: pending.name, subtitle: outcome === 'won' ? 'Vitória registrada. Fora das próximas rodadas deste evento.' : 'Ausência registrada. Fora das próximas rodadas deste evento.' })
+    }
+    setSaving(false)
   }
 
   async function handleNumberRaffle() {
     const max = Number(maxNumber)
-    if (!Number.isFinite(max) || max < 1) return
+    if (!Number.isSafeInteger(max) || max < 1 || max > 1000000) return
 
-    const values = Array.from({ length: max }, (_, index) => String(index + 1))
-    await runRollingAnimation(values, (finalNumber) => {
+    const finalNumber = String(Math.floor(randomFraction() * max) + 1)
+    const values = Array.from({ length: Math.min(max, 100) }, () => String(Math.floor(randomFraction() * max) + 1))
+    await runRollingAnimation(values, finalNumber, () => {
       setWinner({
         title: `Número ${finalNumber}`,
         subtitle: `Sorteado entre 1 e ${max}`,
@@ -116,13 +161,13 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
       ? {
           label: 'Sortear participante',
           onClick: handleParticipantRaffle,
-          disabled: isRolling || registrationsForEvent.length === 0,
+          disabled: isRolling || !!pending || historyError || eligible.length === 0,
           icon: Gift,
         }
       : {
           label: 'Sortear número',
           onClick: handleNumberRaffle,
-          disabled: isRolling || !Number(maxNumber),
+          disabled: isRolling || !Number.isSafeInteger(Number(maxNumber)) || Number(maxNumber) < 1 || Number(maxNumber) > 1000000,
           icon: Shuffle,
         }
   const PrimaryActionIcon = primaryAction.icon
@@ -139,6 +184,7 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
               <button
                 type="button"
                 onClick={() => setMode('participant')}
+                disabled={isRolling || !!pending || saving}
                 className={cn(
                   'rounded-2xl border px-4 py-4 text-left transition-colors',
                   mode === 'participant'
@@ -154,6 +200,7 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
               <button
                 type="button"
                 onClick={() => setMode('number')}
+                disabled={isRolling || !!pending || saving}
                 className={cn(
                   'rounded-2xl border px-4 py-4 text-left transition-colors',
                   mode === 'number'
@@ -171,7 +218,7 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-foreground">Selecionar evento</label>
-                  <Select value={selectedEventId} onValueChange={setSelectedEventId}>
+                  <Select value={selectedEventId} onValueChange={setSelectedEventId} disabled={isRolling || !!pending || saving}>
                     <SelectTrigger className="w-full rounded-xl">
                       <SelectValue placeholder="Escolha um evento" />
                     </SelectTrigger>
@@ -190,9 +237,11 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
                     {selectedEvent ? selectedEvent.title : 'Nenhum evento selecionado'}
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {registrationsForEvent.length} inscrita(s) confirmada(s) para este sorteio.
+                    {eligible.length} disponível(is) de {registrationsForEvent.length} inscrita(s) confirmada(s).
                   </p>
                 </div>
+                <p className="text-sm text-muted-foreground">Quem ganhou ou estava ausente sai das próximas rodadas deste evento. Vitórias anteriores reduzem um pouco a chance, sem impedir novos ganhos.</p>
+                {historyError && <p className="text-sm text-destructive">Não foi possível carregar o histórico de sorteios. Verifique a configuração do banco e atualize a página.</p>}
 
               </div>
             ) : (
@@ -202,6 +251,8 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
                   <Input
                     type="number"
                     min="1"
+                    max="1000000"
+                    step="1"
                     value={maxNumber}
                     onChange={(event) => setMaxNumber(event.target.value)}
                     className="rounded-xl"
@@ -304,6 +355,16 @@ export function RafflePanel({ events, registrations }: RafflePanelProps) {
                       : 'Defina o limite máximo e inicie o sorteio.')}
                 </p>
 
+                {pending && (
+                  <div className="mt-6 space-y-3">
+                    <p className="text-sm">Confirme o resultado antes de sortear novamente.</p>
+                    <div className="flex gap-3">
+                      <Button type="button" className="flex-1" disabled={saving} onClick={() => recordOutcome('won')}>Ganhou</Button>
+                      <Button type="button" variant="outline" className="flex-1" disabled={saving} onClick={() => recordOutcome('absent')}>Ausente</Button>
+                    </div>
+                    {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+                  </div>
+                )}
                 <Button
                   type="button"
                   onClick={primaryAction.onClick}

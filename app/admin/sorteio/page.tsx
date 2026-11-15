@@ -8,16 +8,27 @@ export const metadata = {
 export default async function AdminSorteioPage() {
   const supabase = await createClient()
 
-  const [{ data: events }, { data: registrations }] = await Promise.all([
+  async function loadAll(table: 'registrations' | 'raffle_results') {
+    const rows: Record<string, any>[] = []
+    const pageSize = 500
+    for (let offset = 0; ; offset += pageSize) {
+      const query = table === 'registrations'
+        ? supabase.from(table).select('id, name, email, event_id, participant_id, status').eq('status', 'confirmed')
+        : supabase.from(table).select('id, registration_id, event_id, participant_id, outcome')
+      const { data, error } = await query.order('id').range(offset, offset + pageSize - 1)
+      if (error) return { data: [], error }
+      rows.push(...(data || []))
+      if (!data || data.length < pageSize) return { data: rows, error: null }
+    }
+  }
+
+  const [{ data: events }, { data: registrations, error: registrationsError }, { data: results, error: resultsError }] = await Promise.all([
     supabase
       .from('events')
       .select('id, title, date')
       .order('date', { ascending: false }),
-    supabase
-      .from('registrations')
-      .select('id, name, email, event_id, status')
-      .eq('status', 'confirmed')
-      .order('created_at', { ascending: false }),
+    loadAll('registrations'),
+    loadAll('raffle_results'),
   ])
 
   return (
@@ -36,7 +47,10 @@ export default async function AdminSorteioPage() {
           name: registration.name,
           email: registration.email || null,
           event_id: registration.event_id,
+          participant_id: registration.participant_id,
         }))}
+        results={results || []}
+        historyError={!!resultsError || !!registrationsError}
       />
     </div>
   )

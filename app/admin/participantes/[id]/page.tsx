@@ -47,6 +47,12 @@ export default async function AdminParticipanteDetalhePage({
     .eq('participant_id', id)
     .order('created_at', { ascending: false })
 
+  const { count: raffleWins, error: raffleError } = await supabase
+    .from('raffle_results')
+    .select('id', { count: 'exact', head: true })
+    .eq('participant_id', id)
+    .eq('outcome', 'won')
+
   const whatsappLink = buildWhatsappLink(participant.phone)
   const today = new Date().toISOString().split('T')[0]
   const attendanceStats = (registrations || []).reduce(
@@ -138,6 +144,9 @@ export default async function AdminParticipanteDetalhePage({
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex flex-wrap gap-2">
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs text-primary">
+              {raffleError ? 'Histórico de sorteios indisponível' : `${raffleWins ?? 0} vitória(s) em sorteios`}
+            </span>
             <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs text-primary">
               <UserCheck className="size-3.5" />
               {attendanceStats.presences} presenca{attendanceStats.presences === 1 ? '' : 's'}
