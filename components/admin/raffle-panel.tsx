@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import { Gift, Shuffle, Sparkles, Trophy, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -45,7 +45,7 @@ interface RafflePanelProps {
 
 type Mode = 'participant' | 'number'
 
-const CONFETTI_COLORS = ['#d98b58', '#d46f7d', '#d1a84e', '#7ea28d', '#b87443']
+const CONFETTI_COLORS = ['#d9895b', '#e6b865', '#c86e7d', '#92aa8c', '#f5d9b3', '#fff5e8']
 
 export function RafflePanel({ events, registrations, results: initialResults, historyError }: RafflePanelProps) {
   const [mode, setMode] = useState<Mode>('participant')
@@ -55,6 +55,7 @@ export function RafflePanel({ events, registrations, results: initialResults, hi
   const [winner, setWinner] = useState<{ title: string; subtitle: string } | null>(null)
   const [isRolling, setIsRolling] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
+  const [celebration, setCelebration] = useState(0)
   const [wheelRotation, setWheelRotation] = useState(0)
   const [results, setResults] = useState(initialResults)
   const [pending, setPending] = useState<RegistrationOption | null>(null)
@@ -74,9 +75,14 @@ export function RafflePanel({ events, registrations, results: initialResults, hi
   useEffect(() => {
     if (!showConfetti) return
 
-    const timeout = setTimeout(() => setShowConfetti(false), 3400)
+    const timeout = setTimeout(() => setShowConfetti(false), 5200)
     return () => clearTimeout(timeout)
-  }, [showConfetti])
+  }, [showConfetti, celebration])
+
+  function celebrate() {
+    setCelebration((count) => count + 1)
+    setShowConfetti(true)
+  }
 
   async function runRollingAnimation(values: string[], finalValue: string, onFinish: () => void) {
     setIsRolling(true)
@@ -99,7 +105,7 @@ export function RafflePanel({ events, registrations, results: initialResults, hi
 
     setRollingLabel(finalValue)
     onFinish()
-    setShowConfetti(true)
+    celebrate()
     setIsRolling(false)
   }
 
@@ -137,6 +143,7 @@ export function RafflePanel({ events, registrations, results: initialResults, hi
       setResults((current) => [...current, result])
       setPending(null)
       setWinner({ title: pending.name, subtitle: outcome === 'won' ? 'Vitória registrada. Fora das próximas rodadas deste evento.' : 'Ausência registrada. Fora das próximas rodadas deste evento.' })
+      if (outcome === 'won') celebrate()
     }
     setSaving(false)
   }
@@ -280,29 +287,24 @@ export function RafflePanel({ events, registrations, results: initialResults, hi
           </CardHeader>
           <CardContent className="relative min-h-[26rem] px-6 py-8">
             {showConfetti && (
-              <div className="pointer-events-none absolute inset-0 overflow-hidden">
+              <div key={celebration} aria-hidden="true" className="pointer-events-none absolute inset-0 z-30 overflow-hidden">
                 <div className="raffle-glow absolute inset-0" />
-                {Array.from({ length: 28 }).map((_, index) => (
+                {Array.from({ length: 56 }).map((_, index) => (
                   <span
                     key={index}
                     className="raffle-confetti"
                     style={{
-                      left: `${3 + index * 3.4}%`,
-                      animationDelay: `${(index % 7) * 0.07}s`,
-                      backgroundColor: CONFETTI_COLORS[index % CONFETTI_COLORS.length],
-                    }}
-                  />
-                ))}
-                {Array.from({ length: 10 }).map((_, index) => (
-                  <span
-                    key={`spark-${index}`}
-                    className="raffle-spark"
-                    style={{
-                      left: `${12 + index * 8}%`,
-                      top: `${18 + (index % 3) * 14}%`,
-                      animationDelay: `${index * 0.08}s`,
-                    }}
-                  />
+                      left: `${(index * 37 + 5) % 100}%`,
+                      '--confetti-delay': `${(index % 14) * 0.11}s`,
+                      '--confetti-duration': `${3.2 + (index % 7) * 0.19}s`,
+                      '--confetti-drift': `${(index % 2 ? 1 : -1) * (18 + (index % 5) * 9)}px`,
+                      '--confetti-color': CONFETTI_COLORS[index % CONFETTI_COLORS.length],
+                      '--confetti-width': `${5 + (index % 3) * 2}px`,
+                      '--confetti-height': `${8 + (index % 4) * 3}px`,
+                      '--confetti-radius': index % 4 === 0 ? '50%' : '2px',
+                      '--confetti-spin': `${0.65 + (index % 5) * 0.14}s`,
+                    } as CSSProperties}
+                  ><span /></span>
                 ))}
               </div>
             )}

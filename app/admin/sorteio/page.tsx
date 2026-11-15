@@ -49,7 +49,12 @@ export default async function AdminSorteioPage() {
           event_id: registration.event_id,
           participant_id: registration.participant_id,
         }))}
-        results={results || []}
+        results={results.map((result) => ({
+          registration_id: result.registration_id,
+          event_id: result.event_id,
+          participant_id: result.participant_id,
+          outcome: result.outcome,
+        }))}
         historyError={!!resultsError || !!registrationsError}
       />
     </div>
