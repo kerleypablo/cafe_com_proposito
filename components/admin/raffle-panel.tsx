@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
-import { Gift, Shuffle, Sparkles, Trophy, Users } from 'lucide-react'
+import { ChevronDown, Gift, History, Shuffle, Sparkles, Trophy, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -14,6 +14,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 
 interface EventOption {
   id: string
@@ -30,10 +32,14 @@ interface RegistrationOption {
 }
 
 interface RaffleResult {
+  id: string
   registration_id: string
   event_id: string
   participant_id: string | null
   outcome: 'won' | 'absent'
+  active: boolean
+  name: string
+  created_at: string
 }
 
 interface RafflePanelProps {
@@ -67,10 +73,13 @@ export function RafflePanel({ events, registrations, results: initialResults, hi
     [registrations, selectedEventId],
   )
   const eligible = useMemo(() => registrationsForEvent.filter((registration) =>
-    !results.some((result) => result.event_id === selectedEventId &&
+    !results.some((result) => result.active && result.event_id === selectedEventId &&
       (result.registration_id === registration.id ||
         (registration.participant_id && result.participant_id === registration.participant_id)))
   ), [registrationsForEvent, results, selectedEventId])
+  const eventHistory = useMemo(() => results
+    .filter((result) => result.event_id === selectedEventId)
+    .sort((a, b) => b.created_at.localeCompare(a.created_at)), [results, selectedEventId])
 
   useEffect(() => {
     if (!showConfetti) return
@@ -135,15 +144,31 @@ export function RafflePanel({ events, registrations, results: initialResults, hi
     if (!pending || saving) return
     setSaving(true)
     setError('')
-    const result: RaffleResult = { registration_id: pending.id, event_id: pending.event_id, participant_id: pending.participant_id, outcome }
-    const { error: saveError } = await createClient().from('raffle_results').insert(result)
+    const result = { registration_id: pending.id, event_id: pending.event_id, participant_id: pending.participant_id, outcome }
+    const { data: saved, error: saveError } = await createClient().from('raffle_results').insert(result).select('id, created_at').single()
     if (saveError) {
       setError('Não foi possível salvar o resultado. Confira a conexão e tente novamente.')
     } else {
-      setResults((current) => [...current, result])
+      setResults((current) => [...current, { ...result, id: saved.id, active: true, name: pending.name, created_at: saved.created_at }])
       setPending(null)
       setWinner({ title: pending.name, subtitle: outcome === 'won' ? 'Vitória registrada. Fora das próximas rodadas deste evento.' : 'Ausência registrada. Fora das próximas rodadas deste evento.' })
       if (outcome === 'won') celebrate()
+    }
+    setSaving(false)
+  }
+
+  async function resetRaffle() {
+    if (!selectedEventId || saving || isRolling || pending) return
+    setSaving(true)
+    setError('')
+    const { error: resetError } = await createClient().from('raffle_results')
+      .update({ active: false }).eq('event_id', selectedEventId).eq('active', true)
+    if (resetError) {
+      setError('Não foi possível liberar os nomes. Confira a conexão e tente novamente.')
+    } else {
+      setResults((current) => current.map((result) => result.event_id === selectedEventId ? { ...result, active: false } : result))
+      setWinner(null)
+      setRollingLabel('Pronto para sortear')
     }
     setSaving(false)
   }
@@ -247,7 +272,24 @@ export function RafflePanel({ events, registrations, results: initialResults, hi
                     {eligible.length} disponível(is) de {registrationsForEvent.length} inscrita(s) confirmada(s).
                   </p>
                 </div>
-                <p className="text-sm text-muted-foreground">Quem ganhou ou estava ausente sai das próximas rodadas deste evento. Vitórias anteriores reduzem um pouco a chance, sem impedir novos ganhos.</p>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button type="button" variant="outline" className="w-full rounded-xl" disabled={isRolling || !!pending || saving || historyError || !eventHistory.some((result) => result.active)}>
+                      Liberar nomes para sortear novamente
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Liberar os nomes deste evento?</AlertDialogTitle>
+                      <AlertDialogDescription>As pessoas sorteadas voltarão a participar das próximas rodadas. O histórico será mantido.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction onClick={resetRaffle}>Liberar nomes</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                {error && !pending && <p role="alert" className="text-sm text-destructive">{error}</p>}
                 {historyError && <p className="text-sm text-destructive">Não foi possível carregar o histórico de sorteios. Verifique a configuração do banco e atualize a página.</p>}
 
               </div>
@@ -381,6 +423,43 @@ export function RafflePanel({ events, registrations, results: initialResults, hi
           </CardContent>
         </Card>
       </div>
+
+      {mode === 'participant' && (
+        <Collapsible asChild>
+          <Card>
+            <CollapsibleTrigger className="group flex w-full items-center justify-between gap-4 rounded-xl px-6 py-5 text-left hover:bg-secondary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+              <span className="flex items-center gap-3">
+                <History className="size-5 text-primary" />
+                <span>
+                  <span className="block font-serif text-xl font-semibold">Histórico do sorteio</span>
+                  <span className="block text-sm text-muted-foreground">{selectedEvent?.title || 'Selecione um evento'} · {eventHistory.length} resultado(s)</span>
+                </span>
+              </span>
+              <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent className="border-t border-border/70 pt-4">
+                {historyError ? (
+                  <p className="text-sm text-destructive">Não foi possível carregar o histórico.</p>
+                ) : eventHistory.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Nenhum resultado registrado neste evento.</p>
+                ) : (
+                  <ul className="divide-y divide-border/70">
+                    {eventHistory.map((result) => (
+                      <li key={result.id} className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
+                        <span className="font-medium">{result.name}</span>
+                        <span className={cn('shrink-0 rounded-full px-3 py-1 text-xs font-medium', result.outcome === 'won' ? 'bg-emerald-100 text-emerald-800' : 'bg-muted text-muted-foreground')}>
+                          {result.outcome === 'won' ? 'Ganhou' : 'Ausente'}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
+      )}
     </div>
   )
 }

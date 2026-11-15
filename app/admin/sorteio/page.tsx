@@ -14,7 +14,7 @@ export default async function AdminSorteioPage() {
     for (let offset = 0; ; offset += pageSize) {
       const query = table === 'registrations'
         ? supabase.from(table).select('id, name, email, event_id, participant_id, status').eq('status', 'confirmed')
-        : supabase.from(table).select('id, registration_id, event_id, participant_id, outcome')
+        : supabase.from(table).select('id, registration_id, event_id, participant_id, outcome, active, created_at, registrations(name)')
       const { data, error } = await query.order('id').range(offset, offset + pageSize - 1)
       if (error) return { data: [], error }
       rows.push(...(data || []))
@@ -50,10 +50,14 @@ export default async function AdminSorteioPage() {
           participant_id: registration.participant_id,
         }))}
         results={results.map((result) => ({
+          id: result.id,
           registration_id: result.registration_id,
           event_id: result.event_id,
           participant_id: result.participant_id,
           outcome: result.outcome,
+          active: result.active,
+          name: (Array.isArray(result.registrations) ? result.registrations[0] : result.registrations)?.name || 'Participante',
+          created_at: result.created_at,
         }))}
         historyError={!!resultsError || !!registrationsError}
       />
